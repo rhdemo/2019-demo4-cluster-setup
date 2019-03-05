@@ -16,6 +16,20 @@ Test that you can login to the server with
 make oc_login
 ```
 
+### Knative
+
+To install all Knative components (build, serving, and eventing) and
+its required Istio, run
+
+```bash
+make install_knative
+```
+
+For the most part, it should be idempotent, i.e. it won't install OLM
+or Istio if their respective namespaces already exist. It will
+re-apply the knative operator resources, but as long as they haven't
+changed, OLM shouldn't care.
+
 ### Adding scripts
 
 Just create a sub directory, add a shell script and resource files and execute them via the Makefile.
