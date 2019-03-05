@@ -10,11 +10,11 @@ Scripts to install DG 7.3 in the `datagrid-demo` project.
 ## Endpoints
 - REST
     - service = datagrid-service
-    - route = datagrid-service-https:8443
+    - route = rest-datagrid-demo.apps.dev.openshift.redhatkeynote.com:8443
 
 - HOTROD
     - service = datagrid-service
-    - route = datagrid-service-hotrod:11222
+    - route = hotrod-datagrid-demo.apps.dev.openshift.redhatkeynote.com:11222
 
 Both services can be reached directly via:
 `datagrid-service.datagrid-demo.svc.cluster.local`

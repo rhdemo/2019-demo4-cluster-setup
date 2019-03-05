@@ -46,7 +46,7 @@ objects:
   kind: Service
   metadata:
     annotations:
-      description: Provides a service for accessing the application over HTTPS or Hot Rod protocol.
+      description: Provides a service for accessing the application over HTTP or Hot Rod protocol.
     labels:
       application: ${APPLICATION_NAME}
     name: ${APPLICATION_NAME}
@@ -55,9 +55,9 @@ objects:
     - name: hotrod
       port: 11222
       targetPort: 11222
-    - name: https
-      port: 8443
-      targetPort: 8443
+    - name: http
+      port: 8080
+      targetPort: 8080
     selector:
       deploymentConfig: ${APPLICATION_NAME}
 - apiVersion: apps/v1beta1
@@ -116,8 +116,8 @@ objects:
             timeoutSeconds: 10
           name: ${APPLICATION_NAME}
           ports:
-          - containerPort: 8443
-            name: https
+          - containerPort: 8080
+            name: http
             protocol: TCP
           - containerPort: 8888
             name: ping
