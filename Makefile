@@ -9,3 +9,5 @@ install_knative:
 oc_login:
 	${OC} login ${OC_URL} -u ${OC_USER} -p ${OC_PASSWORD}
 
+datagrid: oc_login
+	./datagrid/deploy.sh

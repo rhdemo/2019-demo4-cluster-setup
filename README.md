@@ -37,4 +37,8 @@ Note that the commands in a `Makefile` have to be indented by tabs.
 Also add a short description to this `README.md`
 
 
-
+## Deloying Infinispan/Datagrid
+To deploy datagrid to the `datagrid-demo` project:
+```
+make datagrid
+```
