@@ -1,6 +1,6 @@
 #!/bin/bash
 INSTANCES=${1:-4}
-IMAGE=registry.access.redhat.com/jboss-datagrid-7/datagrid73-openshift:1.0
+IMAGE=quay.io/redhatdemo/datagrid
 USER=admin
 PASS=admin
 RESOURCE_DIR=$(dirname "$0")
