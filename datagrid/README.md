@@ -8,6 +8,10 @@ Scripts to install DG 7.3 in the `datagrid-demo` project.
 - Entries stored off-heap
 
 ## Endpoints
+- CONSOLE
+    - service = datagrid-service
+    - route = console-datagrid-demo.6923.rh-us-east-1.openshiftapps.com
+
 - REST
     - service = datagrid-service
     - route = rest-datagrid-demo.apps.dev.openshift.redhatkeynote.com:8443
@@ -16,7 +20,7 @@ Scripts to install DG 7.3 in the `datagrid-demo` project.
     - service = datagrid-service
     - route = hotrod-datagrid-demo.apps.dev.openshift.redhatkeynote.com:11222
 
-Both services can be reached directly via:
+All services can be reached directly via:
 `datagrid-service.datagrid-demo.svc.cluster.local`
 
 ### Usage
