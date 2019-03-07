@@ -283,11 +283,88 @@
                     <off-heap/>
                 </memory>
             </distributed-cache>
-            <distributed-cache name="damage-cache" mode="SYNC" owners="2">
-                <memory>
-                    <off-heap/>
-                </memory>
-            </distributed-cache>
+            <counters reliability="CONSISTENT">
+                <strong-counter name="machine-1" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-2" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-3" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-4" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-5" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-6" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-7" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-8" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-9" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-10" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-11" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-12" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-13" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-14" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-15" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-16" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-17" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-18" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-19" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+                <strong-counter name="machine-20" initial-value="1000000000000000000" storage="VOLATILE">
+                    <lower-bound value="0"/>
+                    <upper-bound value="1000000000000000000"/>
+                </strong-counter>
+            </counters>
           </cache-container>
         </subsystem>
         <subsystem xmlns="urn:infinispan:server:jgroups:9.4">

@@ -33,3 +33,18 @@ Both endpoints are configured with authentication enabled. Example hotrod client
 
 ## Cache Configurations
 Additional cache configurations can be added to `config/standalone.xml` as required by issuing a PR or contacting `remerson`.
+
+## Machine Counter Configurations
+Currently we have 20 machine counters configured, which follow the naming convention `machine-x` from 1-20. All of the counters have the following configuration:
+
+```xml
+<counters reliability="CONSISTENT">
+    <strong-counter name="machine-1" initial-value="1000000000000000000" storage="VOLATILE">
+        <lower-bound value="0"/>
+        <upper-bound value="1000000000000000000"/>
+    </strong-counter>
+</counters>
+```
+
+The important characteristics are that the stored value is VOLATILE, i.e only in memory. Also, all of the counters are CONSISTENT, which means in the event of network partition, only clients which are able to connect to the majority partition will be able to update
+the counter's value until the partition has healed.
