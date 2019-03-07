@@ -20,6 +20,8 @@ echo 'demo4-gesture'
 
 SECRET_KEY=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'; echo)
 
+oc new-project web-game-demo
+
 oc process -f ${DIR}/gesture.yml \
   -p S3_ENDPOINT=${S3_ENDPOINT} \
   -p S3_REGION=${S3_REGION} \
