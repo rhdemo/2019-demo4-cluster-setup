@@ -11,3 +11,6 @@ install_knative:
 
 datagrid: oc_login
 	./datagrid/deploy.sh
+
+frontend: oc_login
+	./frontend/deploy.sh
