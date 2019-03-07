@@ -14,3 +14,8 @@ datagrid: oc_login
 
 frontend: oc_login
 	./frontend/deploy.sh
+
+kafka:
+	./kafka/deploy.sh
+
+.PHONY: kafka

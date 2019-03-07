@@ -41,3 +41,18 @@ To deploy datagrid to the `datagrid-demo` project:
 ```
 make datagrid
 ```
+
+## Strimzi and Apache Kafka
+
+The Apache Kafka related deployment is made by:
+
+* The Strimzi operators, starting from the Cluster operator to the Topic and User operators
+* The Apache Kafka cluster deployment (alongside with a Zookeeper cluster)
+* The console server component and the related AMQ Streams Topic Web UI
+* The monitoring infrastructure made by Prometheus, the related alert manager and Grafana with Kafka and Zookeeper dashboards
+
+To deploy the Apache Kafka infrastructure:
+
+```bash
+make kafka
+```
