@@ -18,4 +18,7 @@ frontend: oc_login
 kafka:
 	./kafka/deploy.sh
 
+ml: oc_login
+	./ml/deploy.sh
+
 .PHONY: kafka
