@@ -3,6 +3,8 @@
 echo "STRIMZI_NAMESPACE=" $STRIMZI_NAMESPACE
 echo "STRIMZI_CLUSTER=" $STRIMZI_CLUSTER
 
+oc project $STRIMZI_NAMESPACE 2> /dev/null || oc new-project $STRIMZI_NAMESPACE
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 # download Strimzi release
