@@ -56,3 +56,11 @@ To deploy the Apache Kafka infrastructure:
 ```bash
 make kafka
 ```
+
+## Deploying front end phone application, websocket server, and AI endpoint
+To deploy the phone application, set the appropriate s3 environment variables
+for your s3 bucket as shown in the `.env.example`.  Leaving the s3 variables 
+will run the frontend without saving the training data to s3.
+```
+make frontend
+```
