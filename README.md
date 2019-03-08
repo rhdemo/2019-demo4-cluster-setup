@@ -42,6 +42,21 @@ To deploy datagrid to the `datagrid-demo` project:
 make datagrid
 ```
 
+## Strimzi and Apache Kafka
+
+The Apache Kafka related deployment is made by:
+
+* The Strimzi operators, starting from the Cluster operator to the Topic and User operators
+* The Apache Kafka cluster deployment (alongside with a Zookeeper cluster)
+* The console server component and the related AMQ Streams Topic Web UI
+* The monitoring infrastructure made by Prometheus, the related alert manager and Grafana with Kafka and Zookeeper dashboards
+
+To deploy the Apache Kafka infrastructure:
+
+```bash
+make kafka
+```
+
 ## Deploying front end phone application, websocket server, and AI endpoint
 To deploy the phone application, set the appropriate s3 environment variables
 for your s3 bucket as shown in the `.env.example`.  Leaving the s3 variables 
