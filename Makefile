@@ -6,7 +6,7 @@ export $(shell sed 's/=.*//' ${ENV_FILE})
 oc_login:
 	${OC} login ${OC_URL} -u ${OC_USER} -p ${OC_PASSWORD} --insecure-skip-tls-verify=true
 
-install_knative:
+install_knative: oc_login
 	./knative/install.sh
 
 datagrid: oc_login
@@ -15,7 +15,7 @@ datagrid: oc_login
 frontend: oc_login
 	./frontend/deploy.sh
 
-kafka:
+kafka: oc_login
 	./kafka/deploy.sh
 
 ml: oc_login
