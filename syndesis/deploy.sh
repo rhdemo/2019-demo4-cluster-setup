@@ -2,11 +2,11 @@
 
 set -ex
 
-TARGET_PROJECT=camel-k-test
+TARGET_PROJECT=camel-k
 oc new-project ${TARGET_PROJECT} | true
 
 #
-# Create some PVCs
+# Create some Volume Claims
 #
 oc replace --force -n ${TARGET_PROJECT} -f - <<EOF
 kind: PersistentVolumeClaim
@@ -42,7 +42,7 @@ EOF
 oc replace --force -n openshift -f https://raw.githubusercontent.com/syndesisio/syndesis/master/install/operator/deploy/syndesis-crd.yml
 
 #
-# Create the syndesis operator Deploytment Config, and create a Syndesis resoucre.
+# Create the syndesis operator Deploytment Config, and create a Syndesis resource.
 #
 oc replace --force -n ${TARGET_PROJECT} -f https://raw.githubusercontent.com/syndesisio/syndesis/master/install/operator/deploy/syndesis-operator.yml 
 oc replace --force -n ${TARGET_PROJECT} -f - <<EOF
