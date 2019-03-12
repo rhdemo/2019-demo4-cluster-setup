@@ -65,10 +65,18 @@ will run the frontend without saving the training data to s3.
 make frontend
 ```
 
-## Syndesis
+## Syndesis 
 
 To install all Syndesis components, run:
 
 ```bash
 make syndesis
+```
+
+## Camel K 
+
+To install all Camel K components, run:
+
+```bash
+make camel-k
 ```
