@@ -21,4 +21,7 @@ kafka: oc_login
 ml: oc_login
 	./ml/deploy.sh
 
+syndesis: oc_login
+	./syndesis/deploy.sh
+
 .PHONY: kafka
