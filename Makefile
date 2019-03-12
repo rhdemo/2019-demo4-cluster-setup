@@ -24,4 +24,7 @@ ml: oc_login
 syndesis: oc_login
 	./syndesis/deploy.sh
 
+camel-k: oc_login
+	./syndesis/deploy_camel_k.sh
+
 .PHONY: kafka
