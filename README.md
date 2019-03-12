@@ -64,3 +64,11 @@ will run the frontend without saving the training data to s3.
 ```
 make frontend
 ```
+
+## Syndesis
+
+To install all Syndesis components, run:
+
+```bash
+make syndesis
+```
