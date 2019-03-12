@@ -14,13 +14,6 @@ spec:
       containers:
       - name: strimzi-console
         image: quay.io/redhatdemo/console-pages:latest
-        env:
-        - name: KAFKA_BOOTSTRAP_SERVERS
-          value: my-cluster-kafka-bootstrap:9092
-        - name: STRIMZI_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
         ports:
           - name: http
             containerPort: 8888
