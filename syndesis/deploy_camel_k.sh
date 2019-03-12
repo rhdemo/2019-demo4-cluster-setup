@@ -92,6 +92,8 @@ spec:
     - https://oss.sonatype.org/content/repositories/snapshots/@id=sonatype.snapshots@snapshots@noreleases
     - https://maven.repository.redhat.com/ga@id=redhat.ga
     - https://origin-repository.jboss.org/nexus/content/groups/ea@id=redhat.ea
+  cluster: OpenShift
+  profile: Knative
   resources:
     contexts:
     - none
