@@ -2,13 +2,13 @@
 
 set -ex
 
-TARGET_PROJECT=camel-k
+TARGET_PROJECT=syndesis
 oc new-project ${TARGET_PROJECT} | true
 
 #
 # Create some Volume Claims
 #
-oc replace --force -n ${TARGET_PROJECT} -f - <<EOF
+(oc create -n ${TARGET_PROJECT} -f - || true) <<EOF
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -22,7 +22,7 @@ spec:
   storageClassName: gp2
 EOF
 
-oc replace --force -n ${TARGET_PROJECT} -f - <<EOF
+(oc create -n ${TARGET_PROJECT} -f - || true) <<EOF
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -57,3 +57,19 @@ spec:
     stateCheckInterval: 60
   registry: docker.io
 EOF
+
+#
+# Pickup some bug fixes by patching the image streams.
+#
+loop() {
+    while true ; do
+        if "$@" ; then
+            break
+        fi
+        sleep 1
+    done
+}
+
+
+loop oc patch -n ${TARGET_PROJECT} is syndesis-server --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/hchirino/syndesis-server:latest"}]'
+loop oc patch -n ${TARGET_PROJECT} is oauth-proxy --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/openshift/origin-oauth-proxy:latest"}]'
