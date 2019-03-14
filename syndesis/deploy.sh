@@ -115,21 +115,16 @@ EOF
 #
 # Wait for the installation to reach the Starting phase (resources created)
 #
-while true ; do
-    if [ "$(oc get syndesis default -n $TARGET_PROJECT -o=jsonpath='{.status.phase}')" = "Starting" ]; then
-        break
-    fi
-    sleep 1
-done
-
+wait_for "Starting" oc get syndesis default -n $TARGET_PROJECT -o=jsonpath="{.status.phase}"
 
 #
 # Configure server to use Camel K engine
 #
 loop oc get cm syndesis-server-config -n $TARGET_PROJECT -o yaml > tmp_config.yaml
 if [ $(grep "integration: camel-k" tmp_config.yaml | wc -l) -eq 0 ]; then
-    sed -i 's/controllers:/controllers:\\n  integration: camel-k/' tmp_config.yaml
-    loop oc replace --force -n ${TARGET_PROJECT} -f tmp_config.yaml
+    cat tmp_config.yaml | sed 's/controllers:/controllers:\\n  integration: camel-k/' > camelk_config.yaml
+    loop oc replace --force -n ${TARGET_PROJECT} -f camelk_config.yaml
+    rm camelk_config.yaml
 fi
 rm tmp_config.yaml
 
