@@ -1,37 +1,46 @@
 #!/usr/bin/env bash
 
 set -ex
+dir=$(dirname $0)
+source $dir/common.sh
 
-
-TARGET_PROJECT=camel-k
+TARGET_PROJECT=${1:-camel-k}
+# TODO before the summit, use a tag, not master
 oc new-project ${TARGET_PROJECT} | true
+
+#
+# Add permissions for Istio
+#
+loop oc adm policy add-scc-to-user privileged -n $TARGET_PROJECT -z default
+loop oc adm policy add-scc-to-user anyuid -n $TARGET_PROJECT -z default
+
 
 GITHUB_CONTENT=https://raw.githubusercontent.com/apache/camel-k/master
 
 #
 # Cleanup
 #
-oc delete --force it --all
-oc delete --force ictx --all
-oc delete --force cc --all
+loop oc delete --force it --all
+loop oc delete --force ictx --all
+loop oc delete --force cc --all
 
 #
 # Install the CRD.
 #
-oc replace --force -n openshift -f ${GITHUB_CONTENT}/deploy/crd-integration-platform.yaml
-oc replace --force -n openshift -f ${GITHUB_CONTENT}/deploy/crd-integration-context.yaml
-oc replace --force -n openshift -f ${GITHUB_CONTENT}/deploy/crd-integration.yaml
-oc replace --force -n openshift -f ${GITHUB_CONTENT}/deploy/crd-camel-catalog.yaml
-oc replace --force -n openshift -f ${GITHUB_CONTENT}/deploy/user-cluster-role.yaml
+loop oc apply -n openshift -f ${GITHUB_CONTENT}/deploy/crd-integration-platform.yaml
+loop oc apply -n openshift -f ${GITHUB_CONTENT}/deploy/crd-integration-context.yaml
+loop oc apply -n openshift -f ${GITHUB_CONTENT}/deploy/crd-integration.yaml
+loop oc apply -n openshift -f ${GITHUB_CONTENT}/deploy/crd-camel-catalog.yaml
+loop oc apply -n openshift -f ${GITHUB_CONTENT}/deploy/user-cluster-role.yaml
 
 #
 # Install the Camel K Operator
 #
-oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-service-account.yaml
-oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-openshift.yaml
-oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-binding.yaml
-oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-knative.yaml
-oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-binding-knative.yaml
+loop oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-service-account.yaml
+loop oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-openshift.yaml
+loop oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-binding.yaml
+loop oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-knative.yaml
+loop oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operator-role-binding-knative.yaml
 
 #
 # Install custom bits
@@ -63,7 +72,7 @@ spec:
           image: quay.io/redhatdemo/camel-k:latest
           command:
           - camel-k
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: WATCH_NAMESPACE
               valueFrom:
