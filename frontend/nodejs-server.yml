@@ -5,112 +5,123 @@ labels:
   application: demo4-nodejs-server
 
 metadata:
-  name: 'demo4-nodejs-server'
+  name: "demo4-nodejs-server"
 
 parameters:
-- name: APPLICATION_NAME
-  value: 'demo4-nodejs-server'
-  required: true
-- name: PORT
-  value: '8080'
-  required: true
-- name: IP
-  value: '0.0.0.0'
-  required: true
-- name: IMAGE_REPOSITORY
-  displayName: Image Repository
-  value: quay.io/redhatdemo/demo4-nodejs-server:latest
-  required: true
-- name: GESTURE_API_URL
-  description: The location of the compiled static files from your web apps builder
-  displayName: Output Directory
-  value: http://demo4-gesture:8080
-  required: true
+  - name: APPLICATION_NAME
+    value: "demo4-nodejs-server"
+    required: true
+  - name: PORT
+    value: "8080"
+    required: true
+  - name: IP
+    value: "0.0.0.0"
+    required: true
+  - name: IMAGE_REPOSITORY
+    displayName: Image Repository
+    value: quay.io/redhatdemo/demo4-nodejs-server:latest
+    required: true
+  - name: GESTURE_API_URL
+    description: The location of the compiled static files from your web apps builder
+    displayName: Gesture API URL
+    value: http://demo4-gesture:8080
+    required: true
+  - name: KAFKA_BROKER_LIST_HOST
+    description: The location of the compiled static files from your web apps builder
+    displayName: Kafka Broker List Host
+    value: demo2019-kafka-brokers.strimzi-demo.svc.cluster.local
+    required: true
+  - name: KAFKA_BROKER_LIST_PORT
+    description: The location of the compiled static files from your web apps builder
+    displayName: Kafka Broker List Port
+    value: "9092"
+    required: true
 
 objects:
-- apiVersion: v1
-  kind: Secret
-  metadata:
-    name: ${APPLICATION_NAME}
-  data:
-  stringData:
-    INFINISPAN_PLACEHOLDER: "Will hold Infinispan connection information."
-    KAFKA_PLACEHOLDER: "Will hold Kafka connection information."
-    GESTURE_API_URL: ${GESTURE_API_URL}
+  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${APPLICATION_NAME}
+    data:
+    stringData:
+      INFINISPAN_PLACEHOLDER: "Will hold Infinispan connection information."
+      GESTURE_API_URL: ${GESTURE_API_URL}
+      KAFKA_BROKER_LIST_HOST: ${KAFKA_BROKER_LIST_HOST}
+      KAFKA_BROKER_LIST_PORT: ${KAFKA_BROKER_LIST_PORT}
 
-- apiVersion: v1
-  kind: DeploymentConfig
-  metadata:
-    name: ${APPLICATION_NAME}
-    labels:
-      app: ${APPLICATION_NAME}
-  spec:
-    replicas: 1
-    selector:
-      deploymentconfig: ${APPLICATION_NAME}
-    strategy:
-      type: Rolling
-    template:
-      metadata:
-        labels:
-          app: ${APPLICATION_NAME}
-          deploymentconfig: ${APPLICATION_NAME}
-      spec:
-        containers:
-          - env:
-            - name: IP
-              value: "${IP}"
-            - name: PORT
-              value: '${PORT}'
-            envFrom:
-              - secretRef:
-                  name: ${APPLICATION_NAME}
-            image: ${IMAGE_REPOSITORY}
-            imagePullPolicy: Always
-            name: ${APPLICATION_NAME}
-            ports:
-              - containerPort: 8081
-                protocol: TCP
-              - containerPort: 8082
-                protocol: TCP
-            resources: {}
-            terminationMessagePath: /dev/termination-log
-            terminationMessagePolicy: File
-        dnsPolicy: ClusterFirst
-        restartPolicy: Always
-        schedulerName: default-scheduler
-        securityContext: {}
-        terminationGracePeriodSeconds: 30
-    test: false
-    triggers:
-      - type: ConfigChange
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: ${APPLICATION_NAME}
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      replicas: 1
+      selector:
+        deploymentconfig: ${APPLICATION_NAME}
+      strategy:
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: ${APPLICATION_NAME}
+            deploymentconfig: ${APPLICATION_NAME}
+        spec:
+          containers:
+            - env:
+                - name: IP
+                  value: "${IP}"
+                - name: PORT
+                  value: "${PORT}"
+              envFrom:
+                - secretRef:
+                    name: ${APPLICATION_NAME}
+              image: ${IMAGE_REPOSITORY}
+              imagePullPolicy: Always
+              name: ${APPLICATION_NAME}
+              ports:
+                - containerPort: 8081
+                  protocol: TCP
+                - containerPort: 8082
+                  protocol: TCP
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
+      triggers:
+        - type: ConfigChange
 
-- apiVersion: v1
-  kind: Service
-  metadata:
-    name: ${APPLICATION_NAME}-game
-    labels:
-      app: ${APPLICATION_NAME}
-  spec:
-    ports:
-    - name: 8080-tcp
-      port: 8080
-      protocol: TCP
-      targetPort: 8081
-    selector:
-      deploymentconfig: ${APPLICATION_NAME}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${APPLICATION_NAME}-game
+      labels:
+        app: ${APPLICATION_NAME}
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8081
+      selector:
+        deploymentconfig: ${APPLICATION_NAME}
 
-- apiVersion: v1
-  kind: Service
-  metadata:
-    name: ${APPLICATION_NAME}-admin
-    labels:
-      app: ${APPLICATION_NAME}-admin
-  spec:
-    ports:
-      - name: 8080-tcp
-        port: 8080
-        protocol: TCP
-        targetPort: 8082
-    selector:
-      deploymentconfig: ${APPLICATION_NAME}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: ${APPLICATION_NAME}-admin
+      labels:
+        app: ${APPLICATION_NAME}-admin
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8082
+      selector:
+        deploymentconfig: ${APPLICATION_NAME}

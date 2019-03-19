@@ -2,6 +2,5 @@
 
 #set -x
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+oc delete project web-game-demo
 
-${DIR}/deploy.sh 'delete'
