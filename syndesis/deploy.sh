@@ -6,7 +6,7 @@ source $dir/common.sh
 
 TARGET_PROJECT=syndesis
 # Using a recent tag, not master, so the images don't get redeployed at each commit
-SYNDESIS_BASE_TAG=1.7.1-20190314
+SYNDESIS_BASE_TAG=1.7.1-20190319
 
 oc new-project ${TARGET_PROJECT} | true
 
@@ -140,3 +140,6 @@ rm tmp_config.yaml
 loop oc patch -n ${TARGET_PROJECT} is syndesis-server --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-server:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is syndesis-meta --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-meta:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is oauth-proxy --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/openshift/origin-oauth-proxy:latest"}]'
+
+# TODO remove when https://github.com/syndesisio/syndesis/issues/4960 is fixed
+loop oc patch -n ${TARGET_PROJECT} is syndesis-ui --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"docker.io/syndesis/syndesis-ui:1.7.1-20190314"}]'
