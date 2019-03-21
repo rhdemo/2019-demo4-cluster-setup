@@ -251,18 +251,8 @@
             </sasl>
         </subsystem>
         <subsystem xmlns="urn:infinispan:server:endpoint:9.4">
-            <hotrod-connector cache-container="clustered" socket-binding="hotrod-internal" name="hotrod-internal">
-                <authentication security-realm="ApplicationRealm">
-                    <sasl server-name="datagrid-service" mechanisms="DIGEST-MD5" qop="auth">
-                        <policy>
-                            <no-anonymous value="true"/>
-                        </policy>
-                        <property name="com.sun.security.sasl.digest.utf8">true</property>
-                    </sasl>
-                </authentication>
-            </hotrod-connector>
+            <hotrod-connector cache-container="clustered" socket-binding="hotrod-internal" name="hotrod-internal"/>
             <rest-connector name="rest" socket-binding="rest-external" cache-container="clustered">
-                <authentication security-realm="jdg-openshift" auth-method="BASIC"/>
                 <cors-rules>
                     <cors-rule name="allow ALL" allow-credentials="true" max-age-seconds="2000">
                         <allowed-origins>*</allowed-origins>
