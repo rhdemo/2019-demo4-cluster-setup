@@ -20,9 +20,9 @@ GITHUB_CONTENT=https://raw.githubusercontent.com/apache/camel-k/master
 #
 # Cleanup
 #
-loop oc delete --force it --all
-loop oc delete --force ictx --all
-loop oc delete --force cc --all
+oc delete --force it --all | true
+oc delete --force ictx --all | true
+oc delete --force cc --all | true
 
 #
 # Install the CRD.
@@ -105,5 +105,5 @@ spec:
   profile: Knative
   resources:
     contexts:
-    - none
+    - knative
 EOF
