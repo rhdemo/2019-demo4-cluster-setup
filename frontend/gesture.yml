@@ -11,6 +11,9 @@ parameters:
   - name: APPLICATION_NAME
     value: 'demo4-gesture'
     required: true
+  - name: REPLICAS
+    value: "1"
+    required: true
   - name: PORT
     value: '8080'
     required: true
@@ -76,7 +79,7 @@ objects:
         deploymentConfig: ${APPLICATION_NAME}
         app: ${APPLICATION_NAME}
     spec:
-      replicas: 5
+      replicas: ${REPLICAS}
       selector:
         deploymentConfig: ${APPLICATION_NAME}
       strategy:
