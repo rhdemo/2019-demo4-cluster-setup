@@ -106,4 +106,11 @@ spec:
   resources:
     contexts:
     - knative
+  traits:
+    knative-service:
+      configuration:
+        autoscaling-metric: concurrency
+        autoscaling-target: "1"
+        max-scale: "10"
+        min-scale: "0"
 EOF
