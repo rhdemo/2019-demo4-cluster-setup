@@ -12,9 +12,6 @@ install_knative: oc_login
 datagrid: oc_login
 	./datagrid/deploy.sh
 
-frontend: oc_login
-	./frontend/deploy.sh
-
 kafka: oc_login
 	./kafka/deploy.sh
 
@@ -26,5 +23,8 @@ syndesis: oc_login
 
 camel-k: oc_login
 	./syndesis/deploy_camel_k.sh
+
+frontend: oc_login
+	./frontend/deploy.sh
 
 .PHONY: kafka
