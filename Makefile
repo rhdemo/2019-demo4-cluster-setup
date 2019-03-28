@@ -27,4 +27,8 @@ camel-k: oc_login
 frontend: oc_login
 	./frontend/deploy.sh
 
+machine-history: oc_login
+	./machinehistory/install.sh
+
+
 .PHONY: kafka
