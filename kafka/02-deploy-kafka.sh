@@ -16,8 +16,8 @@ echo "Waiting for Zookeeper cluster to be ready..."
 readyReplicas="0"
 while [ "$readyReplicas" != "$zkReplicas" ]
 do
-    readyReplicas=$(oc get statefulsets $CLUSTER-zookeeper -o jsonpath="{.status.readyReplicas}" -n $NAMESPACE)
     sleep 2
+    readyReplicas=$(oc get statefulsets $CLUSTER-zookeeper -o jsonpath="{.status.readyReplicas}" -n $NAMESPACE)
 done
 echo "...Zookeeper cluster ready"
 
@@ -26,8 +26,8 @@ echo "Waiting for Kafka cluster to be ready..."
 readyReplicas="0"
 while [ "$readyReplicas" != "$kReplicas" ]
 do
-    readyReplicas=$(oc get statefulsets $CLUSTER-kafka -o jsonpath="{.status.readyReplicas}" -n $NAMESPACE)
     sleep 2
+    readyReplicas=$(oc get statefulsets $CLUSTER-kafka -o jsonpath="{.status.readyReplicas}" -n $NAMESPACE)
 done
 echo "...Kafka cluster ready"
 
