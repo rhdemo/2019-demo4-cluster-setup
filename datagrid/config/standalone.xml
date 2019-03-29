@@ -273,6 +273,11 @@
                     <off-heap/>
                 </memory>
             </distributed-cache>
+            <distributed-cache name="DispatchEvents">
+                <memory>
+                    <off-heap/>
+                </memory>
+            </distributed-cache>
             <counters reliability="CONSISTENT">
                 <strong-counter name="machine-1" initial-value="1000000000000000000" storage="VOLATILE">
                     <lower-bound value="0"/>
