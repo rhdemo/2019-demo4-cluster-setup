@@ -24,24 +24,6 @@ install_knative build
 install_knative serving
 
 #
-# START SERVING AND ISTIO MESH HACK
-#
-
-# The image below is created from
-# https://github.com/bbrowning/serving/tree/demo2019. Clone
-# the repo, checkout the demo2019 branch, then run:
-#
-# KO_DOCKER_REPO=docker.io/bbrowning ko resolve -f contrib/controller.yaml
-#
-# and copy the image value here
-SERVING_DEMO_CONTROLLER_IMAGE="controller-43f0364ab2f6dab17267e80a1f6a4adc@sha256:881ff60149619af91f70dcd4d18d55e4810c4450d4219ba82def5411fc9a2e59"
-oc patch deployment controller -n knative-serving -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\": \"controller\", \"image\":\"$SERVING_DEMO_CONTROLLER_IMAGE\"}]}}}}"
-
-#
-# END SERVING AND ISTIO MESH HACK
-#
-
-#
 # START EVENTING AND OLM HACK
 #
 
@@ -57,6 +39,26 @@ oc apply -n knative-eventing -f https://raw.githubusercontent.com/openshift-clou
 wait_for_all_pods knative-build
 wait_for_all_pods knative-eventing
 wait_for_all_pods knative-serving
+
+#
+# START SERVING AND ISTIO MESH HACK
+#
+
+# The image below is created from
+# https://github.com/bbrowning/serving/tree/demo2019. Clone
+# the repo, checkout the demo2019 branch, then run:
+#
+# KO_DOCKER_REPO=docker.io/bbrowning ko resolve -f contrib/controller.yaml
+#
+# and copy the image value here
+SERVING_DEMO_CONTROLLER_IMAGE="docker.io/bbrowning/controller-43f0364ab2f6dab17267e80a1f6a4adc@sha256:881ff60149619af91f70dcd4d18d55e4810c4450d4219ba82def5411fc9a2e59"
+oc patch deployment controller -n knative-serving -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\": \"controller\", \"image\":\"$SERVING_DEMO_CONTROLLER_IMAGE\"}]}}}}"
+
+wait_for_all_pods knative-serving
+
+#
+# END SERVING AND ISTIO MESH HACK
+#
 
 enable_interaction_with_registry
 
