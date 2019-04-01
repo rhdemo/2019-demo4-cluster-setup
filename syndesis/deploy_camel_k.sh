@@ -111,6 +111,6 @@ spec:
       configuration:
         autoscaling-metric: concurrency
         autoscaling-target: "1"
-        max-scale: "10"
+        max-scale: "100"
         min-scale: "0"
 EOF
