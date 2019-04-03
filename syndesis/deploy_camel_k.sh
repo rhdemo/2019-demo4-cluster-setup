@@ -114,3 +114,32 @@ spec:
         max-scale: "100"
         min-scale: "0"
 EOF
+
+oc apply -n ${TARGET_PROJECT} -f - <<EOF
+apiVersion: camel.apache.org/v1alpha1
+kind: Integration
+metadata:
+  creationTimestamp: null
+  name: load
+  namespace: syndesis
+spec:
+  replicas: 0
+  sources:
+  - content: |-
+      event = '''{
+          "sensorId": "360a3255-7b14-45b8-9624-8ee396a716c8",
+          "machineId": 3,
+          "vibrationClass": 1,
+          "confidencePercentage": 80
+      }'''
+
+      from("timer:clock?period=100")
+          .log('tick')
+          .setBody().constant(event)
+          .to("seda:queue?waitForTaskToComplete=Never")
+
+      from("seda:queue?concurrentConsumers=20")
+          .log('Sending: ${body}')
+          .to("knative:endpoint/i-sensor-to-damagex")
+    name: load.groovy
+EOF
