@@ -2,6 +2,22 @@
 
 NAMESPACE=${STRIMZI_NAMESPACE:-strimzi}
 
+function check_openshift_4 {
+  if oc api-resources >/dev/null; then
+    oc api-resources | grep machineconfigs | grep machineconfiguration.openshift.io > /dev/null 2>&1
+  else
+    (oc get ns openshift && oc version | tail -1 | grep "v1.12") >/dev/null 2>&1
+  fi
+}
+
+if check_openshift_4; then
+    # uninstall operator
+    oc delete subscriptions.operators.coreos.com strimzi-kafka-operator -n $NAMESPACE
+    oc delete clusterserviceversion strimzi-cluster-operator.v0.11.1 -n $NAMESPACE
+    oc delete catalogsourceconfig installed-community-$NAMESPACE -n openshift-marketplace
+    oc delete operatorgroup strimzi-kafka-operator -n $NAMESPACE
+fi
+
 # deleting "all" Strimzi resources
 oc delete all -l app=strimzi -n $NAMESPACE
 

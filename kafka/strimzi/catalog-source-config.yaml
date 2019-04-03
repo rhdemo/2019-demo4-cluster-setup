@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1
+kind: CatalogSourceConfig
+metadata:
+  name: installed-community-my-namespace
+  namespace: openshift-marketplace
+spec:
+  csDisplayName: Community Operators
+  csPublisher: Community
+  packages: strimzi-kafka-operator
+  targetNamespace: my-namespace

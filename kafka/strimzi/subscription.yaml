@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: strimzi-kafka-operator
+  namespace: my-namespace
+spec:
+  channel: stable
+  name: strimzi-kafka-operator
+  source: installed-community-my-namespace
+  sourceNamespace: my-namespace
