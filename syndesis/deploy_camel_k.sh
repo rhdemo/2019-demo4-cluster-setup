@@ -107,6 +107,9 @@ spec:
     contexts:
     - knative
   traits:
+    gc:
+      configuration:
+        enabled: "false"
     knative-service:
       configuration:
         autoscaling-metric: concurrency
