@@ -29,3 +29,6 @@ oc logs -f bc/machine-history-uberjar
 oc expose svc/machine-history-uberjar
 
 
+oc new-app --docker-image=quay.io/redhatdemo/machine-history --name=machine-history
+oc set env dc/machine-history QUARKUS_DATASOURCE_URL=jdbc:postgresql://machine-history-postgres-dev:5432/machine_history_dev
+oc expose svc/machine-history --hostname=machine-history.apps.dev.openshift.redhatkeynote.com
