@@ -1,5 +1,4 @@
 #!/bin/bash
-DOCKER_IMAGE=docker.io/talluzi/optaplanner-demo
 PROJECT_NAMESPACE=optaplanner-demo
 OPTAPLANNER_APP_NAME=optaplanner-demo
 RESOURCE_DIR=$(dirname "$0")
