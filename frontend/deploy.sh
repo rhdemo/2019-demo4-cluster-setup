@@ -45,7 +45,6 @@ SECRET_KEY=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '
 
 oc new-project web-game-demo
 
-echo 'demo4-gesture'
 oc process -f ${DIR}/demo4-gesture.yml \
   -p REPLICAS=${GESTURE_REPLICAS} \
   -p S3_ENDPOINT=${S3_ENDPOINT} \
