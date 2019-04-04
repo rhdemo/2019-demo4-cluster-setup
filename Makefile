@@ -33,7 +33,7 @@ machine-history: oc_login
 apicurio: oc_login
 	./apicurio/install.sh
 
-optaplanner: oc_login
+optaplanner: oc_login datagrid
 	./optaplanner/deploy.sh
 
 .PHONY: kafka
