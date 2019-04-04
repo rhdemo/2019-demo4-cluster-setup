@@ -1,0 +1,143 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Damage Service",
+    "description": "A damage service api used to work with damage events.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/ApplyDamage": {
+      "post": {
+        "summary": "Updates a machines health with the damage event.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DamageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Applies the damage event."
+          }
+        }
+      }
+    },
+    "/SensorToDamage": {
+      "post": {
+        "summary": "Converts a gesture event to a damage event.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SensorEvent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Converts a sensor to a damage event.",
+            "schema": {
+              "$ref": "#/definitions/DamageEvent"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "SensorEvent": {
+      "description": "The representation of a gesture event.",
+      "required": [
+        "vibrationClass",
+        "sensorId",
+        "machineId",
+        "confidencePercentage"
+      ],
+      "type": "object",
+      "properties": {
+        "sensorId": {
+          "type": "string"
+        },
+        "machineId": {
+          "type": "number"
+        },
+        "vibrationClass": {
+          "type": "number"
+        },
+        "confidencePercentage": {
+          "type": "number"
+        }
+      }
+    },
+    "DamageRequest": {
+      "description": "Represents a request to apply damage to the state of a machine",
+      "required": [
+        "confidencePercentage",
+        "damage",
+        "downTimePrice",
+        "machineId",
+        "health",
+        "sensorId",
+        "vibrationClass"
+      ],
+      "type": "object",
+      "properties": {
+        "sensorId": {
+          "type": "string"
+        },
+        "machineId": {
+          "type": "number"
+        },
+        "vibrationClass": {
+          "type": "number"
+        },
+        "confidencePercentage": {
+          "type": "number"
+        },
+        "damage": {
+          "type": "integer"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "downTimePrice": {
+          "type": "integer"
+        }
+      }
+    },
+    "DamageEvent": {
+      "description": "The representation of a damage event.",
+      "required": [
+        "damage",
+        "machineId"
+      ],
+      "type": "object",
+      "properties": {
+        "machineId": {
+          "type": "number"
+        },
+        "damage": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}
