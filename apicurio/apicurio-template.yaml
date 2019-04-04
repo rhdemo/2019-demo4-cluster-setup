@@ -112,6 +112,7 @@ objects:
   stringData:
     keycloak-user: "${KC_USER}"
     keycloak-password: "${KC_PASS}"
+    github-client-secret : "${GITHUB_CLIENT_SECRET}"
 # Services for: Keycloak, API, WS, UI
 - apiVersion: v1
   kind: Service
@@ -363,6 +364,11 @@ objects:
                  secretKeyRef:
                    name: apicurio-studio-auth
                    key: keycloak-user
+             - name: GITHUB_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: apicurio-studio-auth
+                   key: github-client-secret      
              - name: APICURIO_KEYCLOAK_PASSWORD
                valueFrom:
                  secretKeyRef:
@@ -370,6 +376,22 @@ objects:
                    key: keycloak-password
              - name: APICURIO_UI_URL
                value: https://${UI_ROUTE}
+             - name: DB_VENDOR
+               value: POSTGRES
+             - name: DB_ADDR
+               value: postgresql
+             - name: DB_DATABASE
+               value: ${DB_NAME}
+             - name: DB_USER
+               valueFrom:
+                 secretKeyRef:
+                   name: postgresql
+                   key: database-user
+             - name: DB_PASSWORD  
+               valueFrom:
+                 secretKeyRef:
+                   name: postgresql
+                   key: database-password
           resources:
             limits:
               cpu: ${AUTH_CPU_LIMIT}
@@ -948,4 +970,9 @@ parameters:
   displayName: AUTH CPU Request
   description: AUTH Pods CPU Request
   value: 100m
+  required: true
+- name: GITHUB_CLIENT_SECRET
+  displayName: Github OAth client secret
+  description: Github OAth client secret
+  value: fa0f48d6f5d4a022e922b1829b395b38834502d4
   required: true
