@@ -1,0 +1,163 @@
+{
+  "info": {
+    "title": "Machine History Initial v3",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/machines": {
+      "get": {
+        "summary": "Gets a list of all machines",
+        "operationId": "getAllMachines",
+        "responses": {
+          "200": {
+            "description": "The list of machine ID's",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Machine"
+              }
+            }
+          }
+        },
+        "parameters": []
+      }
+    },
+    "/machines/history/{id}": {
+      "get": {
+        "operationId": "machineHistory",
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/MachineHistory"
+            }
+          }
+        },
+        "parameters": []
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ]
+    },
+    "/machines/{id}": {
+      "get": {
+        "responses": {
+          "200": {
+            "schema": {
+              "$ref": "#/definitions/MachineState"
+            }
+          }
+        },
+        "parameters": []
+      },
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        }
+      ]
+    }
+  },
+  "swagger": "2.0",
+  "definitions": {
+    "MachineState": {
+      "description": "The representation of the current state of a machine",
+      "required": [
+        "id",
+        "name",
+        "health"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "The machine ID",
+          "type": "integer"
+        },
+        "name": {
+          "description": "The machine name",
+          "type": "string"
+        },
+        "health": {
+          "description": "The machine health",
+          "type": "integer"
+        }
+      }
+    },
+    "Machine": {
+      "description": "A Machine",
+      "required": [
+        "id",
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "format": "int32",
+          "description": "The Machine ID",
+          "type": "integer"
+        },
+        "name": {
+          "description": "The machine name",
+          "type": "string"
+        }
+      }
+    },
+    "MaintenanceData": {
+      "description": "A record of maintenance performed on a machine",
+      "required": [
+        "id",
+        "date",
+        "repair",
+        "mechanic"
+      ],
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "date": {
+          "type": "string"
+        },
+        "mechanic": {
+          "type": "string"
+        },
+        "repair": {
+          "type": "integer"
+        },
+        "finalHealth": {
+          "type": "integer"
+        }
+      }
+    },
+    "MachineHistory": {
+      "description": "The history of a machine",
+      "required": [
+        "maintenance",
+        "name"
+      ],
+      "type": "object",
+      "properties": {
+        "maintenance": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MaintenanceData"
+          }
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "x-components": {}
+}
