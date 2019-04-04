@@ -30,5 +30,7 @@ frontend: oc_login
 machine-history: oc_login
 	./machinehistory/install.sh
 
+apicurio: oc_login
+	./apicurio/install.sh
 
 .PHONY: kafka
