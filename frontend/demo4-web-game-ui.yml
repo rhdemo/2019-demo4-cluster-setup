@@ -15,7 +15,9 @@ parameters:
     displayName: Image Repository
     value: quay.io/redhatdemo/demo4-web-game-nginx:latest
     required: true
-
+  - name: KEY
+  - name: CERTIFICATE
+  - name: CA_CERTIFICATE
 
 objects:
   - apiVersion: v1
@@ -63,7 +65,7 @@ objects:
       selector:
         app: ${APPLICATION_NAME}
 
-# backwards compatibility (for training app)
+  # backwards compatibility (for training app)
   - apiVersion: v1
     kind: Route
     metadata:
@@ -76,6 +78,16 @@ objects:
       to:
         kind: Service
         name: ${APPLICATION_NAME}
+      tls:
+        termination: edge
+        key: |-
+          ${KEY}
+        certificate: |-
+          ${CERTIFICATE}
+        caCertificate: |-
+          ${CA_CERTIFICATE}
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
 
 
   - apiVersion: v1
@@ -90,4 +102,14 @@ objects:
       to:
         kind: Service
         name: ${APPLICATION_NAME}
+      tls:
+        termination: edge
+        key: |-
+          ${KEY}
+        certificate: |-
+          ${CERTIFICATE}
+        caCertificate: |-
+          ${CA_CERTIFICATE}
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
 
