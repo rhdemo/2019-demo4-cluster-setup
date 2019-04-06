@@ -11,6 +11,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 if [[ "${FRONTEND_DEV}" = "true" ]]
 then
     echo "Deploying in front end dev mode.  No S3 storage and 1 pod per service."
+    KEY=''
+    CERTIFICATE=''
+    CA_CERTIFICATE=''
     GESTURE_REPLICAS=1
     GAME_UI_REPLICAS=1
     GAME_SERVER_REPLICAS=1
@@ -25,7 +28,10 @@ then
     S3_ACCESS_KEY_ID=''
     S3_SECRET_ACCESS_KEY=''
 else
-    GESTURE_REPLICAS=5
+    KEY=$(cat ${DIR}/../key.pem)
+    CERTIFICATE=$(cat ${DIR}/../cert.pem)
+    CA_CERTIFICATE=$(cat ${DIR}/../ca.pem)
+    GESTURE_REPLICAS=2
     GAME_UI_REPLICAS=5
     GAME_SERVER_REPLICAS=10
     ADMIN_UI_REPLICAS=2
@@ -84,4 +90,7 @@ oc process -f ${DIR}/demo4-web-game-server.yml \
 oc process -f ${DIR}/demo4-web-game-ui.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-web-game-nginx:latest \
   -p REPLICAS=${GAME_UI_REPLICAS} \
+  -p KEY="${KEY}" \
+  -p CERTIFICATE="${CERTIFICATE}" \
+  -p CA_CERTIFICATE="${CA_CERTIFICATE}" \
   | oc create -f -
