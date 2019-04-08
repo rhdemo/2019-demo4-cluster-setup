@@ -41,7 +41,7 @@ objects:
               fieldRef:
                 apiVersion: v1
                 fieldPath: metadata.namespace
-          image: talluzi/optaplanner-demo:latest
+          image: quay.io/redhatdemo/optaplanner-demo:latest
           imagePullPolicy: IfNotPresent
           name: spring-boot
           ports:
