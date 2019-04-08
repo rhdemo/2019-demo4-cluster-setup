@@ -31,62 +31,9 @@
           }
         }
       }
-    },
-    "/SensorToDamage": {
-      "post": {
-        "summary": "Converts a gesture event to a damage event.",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/SensorEvent"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Converts a sensor to a damage event.",
-            "schema": {
-              "$ref": "#/definitions/DamageEvent"
-            }
-          }
-        }
-      }
     }
   },
   "definitions": {
-    "SensorEvent": {
-      "description": "The representation of a gesture event.",
-      "required": [
-        "vibrationClass",
-        "sensorId",
-        "machineId",
-        "confidencePercentage"
-      ],
-      "type": "object",
-      "properties": {
-        "sensorId": {
-          "type": "string"
-        },
-        "machineId": {
-          "type": "number"
-        },
-        "vibrationClass": {
-          "type": "number"
-        },
-        "confidencePercentage": {
-          "type": "number"
-        }
-      }
-    },
     "DamageRequest": {
       "description": "Represents a request to apply damage to the state of a machine",
       "required": [
@@ -107,13 +54,10 @@
           "type": "number"
         },
         "vibrationClass": {
-          "type": "number"
+          "type": "string"
         },
         "confidencePercentage": {
           "type": "number"
-        },
-        "damage": {
-          "type": "integer"
         },
         "health": {
           "type": "integer"

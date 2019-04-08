@@ -4,14 +4,20 @@ kamel run \
     --name damage-service \
     --profile openshift \
     --dependency camel-netty4-http \
-    --dependency camel-infinispan \
     --dependency camel-jackson \
+    --dependency mvn:org.infinispan/infinispan-client-hotrod/9.4.7.Final \
+    --dependency mvn:org.infinispan/infinispan-query-dsl/9.4.7.Final \
+    --dependency mvn:org.infinispan/infinispan-commons/9.4.7.Final \
     --dependency mvn:org.codehaus.groovy/groovy-json/2.5.5 \
     --trait service.auto=false \
     --trait service.port=8080 \
     --trait gc.enabled=false \
-    damage-service.groovy
+    services/damage-service.groovy
 */
+
+import java.nio.charset.StandardCharsets
+import org.infinispan.commons.marshall.StringMarshaller
+import org.infinispan.client.hotrod.configuration.NearCacheMode
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder
 import org.infinispan.client.hotrod.configuration.SaslQop
 import org.infinispan.client.hotrod.RemoteCache
@@ -22,33 +28,28 @@ import org.infinispan.counter.api.CounterConfiguration
 import org.infinispan.counter.api.CounterManager
 import org.infinispan.counter.api.CounterType
 import org.infinispan.counter.api.StrongCounter
-
 import org.apache.camel.model.dataformat.JsonLibrary
 import org.apache.camel.Processor
 
 // *********************************************
 //
-// ISPN
+// Setup
 //
 // *********************************************
 
-def config =  new ConfigurationBuilder()
-    .addServer()
-    .host('datagrid-service.datagrid-demo.svc.cluster.local')
-    .port(11222)
-    .security().authentication()
-    .enable()
-    .username('admin')
-    .password('admin')
-    .realm('ApplicationRealm')
-    .serverName('datagrid-service')
-    .saslMechanism('DIGEST-MD5')
-    .saslQop(SaslQop.AUTH)
+def logger     = org.slf4j.LoggerFactory.getLogger("damage-service")
+def mapper     = new com.fasterxml.jackson.databind.ObjectMapper()
+def cacheHost  = 'datagrid-service.datagrid-demo.svc.cluster.local'
+def cachePort  = 11222
+
+def cacheCfg   = new ConfigurationBuilder()
+    .addServer().host(cacheHost).port(cachePort)
+    .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
     .build()
 
-def cacheMgr   = new RemoteCacheManager(config)
+def cacheMgr   = new RemoteCacheManager(cacheCfg)
 def counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
-def counterCfg = CounterConfiguration.builder(CounterType.BOUNDED_STRONG).initialValue(100).lowerBound(0).build()
+def cache      = cacheMgr.getCache()
 
 // *********************************************
 //
@@ -57,18 +58,20 @@ def counterCfg = CounterConfiguration.builder(CounterType.BOUNDED_STRONG).initia
 // *********************************************
 
 def applyDamage = {
-    long transposedDamage = it.in.body.damage * 1_000_000_000_000_000_000
+    def kind    = it.in.body.vibrationClass
+    def cname   = "machine-${it.in.body.machineId}"
+    def config  = mapper.readValue(cache['game'], Map.class)
+    
+    double damage  = config.damage."${kind}"
+    double multipl = config.damageMultiplier
+    long   tdamage = damage * multipl * 1_000_000_000_000_000_000
 
-    counter = counterMgr.getStrongCounter("machine-${it.in.body.machineId}")
-    counter.addAndGet(-transposedDamage);
-} as Processor
+    logger.info("${cname} ${kind} ${damage} ${multipl} ${tdamage}")
 
-def sensorToDamage = {
-    it.in.body = groovy.json.JsonOutput.toJson([
-        'machineId': it.in.body.machineId,
-        'damage': java.util.concurrent.ThreadLocalRandom.current().nextInt(0, 100)
-    ])
-} as Processor 
+    counterMgr.getStrongCounter(cname).addAndGet(-tdamage).thenAccept {
+        counter -> logger.info('machine-{} value: {}', it.in.body.machineId, counter)
+    }
+}
 
 // *********************************************
 //
@@ -86,19 +89,11 @@ rest {
         post()
             .consumes('application/json')
             .produces('application/json')
-            .route()
-                .unmarshal().json(JsonLibrary.Jackson, Map.class)
-                .process(applyDamage)
-                .to('log:applyDamage')
-    }
-
-    path('/SensorToDamage') {
-        post()
-            .consumes('application/json')
-            .produces('application/json')
-            .route()
-                .unmarshal().json(JsonLibrary.Jackson, Map.class)
-                .process(sensorToDamage)
-                .to('log:sensorToDamage')
+            .to('seda:applyDamage')
     }
 }
+
+from('seda:applyDamage?concurrentConsumers=20')
+    .unmarshal().json(JsonLibrary.Jackson, Map.class)
+    .process(applyDamage as Processor)
+    .to('log:applyDamage')
