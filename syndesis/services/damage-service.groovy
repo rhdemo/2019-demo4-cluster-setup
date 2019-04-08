@@ -45,6 +45,7 @@ def cachePort  = 11222
 def cacheCfg   = new ConfigurationBuilder()
     .addServer().host(cacheHost).port(cachePort)
     .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
+    .nearCache().mode(NearCacheMode.INVALIDATED).maxEntries(100)
     .build()
 
 def cacheMgr   = new RemoteCacheManager(cacheCfg)
