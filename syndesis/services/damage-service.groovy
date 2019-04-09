@@ -32,6 +32,7 @@ kamel run \
 import java.nio.charset.StandardCharsets
 import org.infinispan.commons.marshall.StringMarshaller
 import org.infinispan.client.hotrod.configuration.NearCacheMode
+import org.infinispan.client.hotrod.configuration.ClientIntelligence
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder
 import org.infinispan.client.hotrod.configuration.SaslQop
 import org.infinispan.client.hotrod.RemoteCache
@@ -59,6 +60,7 @@ def cachePort  = 11222
 def cacheCfg   = new ConfigurationBuilder()
     .addServer().host(cacheHost).port(cachePort)
     .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
+    .clientIntelligence(ClientIntelligence.BASIC)
     .build()
 
 def cacheMgr   = new RemoteCacheManager(cacheCfg)
