@@ -1,6 +1,5 @@
 /*
 kamel run \
-    --dev \
     --name damage-service \
     --profile openshift \
     --dependency camel-netty4-http \
@@ -12,6 +11,21 @@ kamel run \
     --trait service.auto=false \
     --trait service.port=8080 \
     --trait gc.enabled=false \
+    services/damage-service.groovy
+
+kamel run \
+    --name damage-service \
+    --profile openshift \
+    --dependency camel-netty4-http \
+    --dependency camel-jackson \
+    --dependency mvn:org.infinispan/infinispan-client-hotrod/9.4.7.Final \
+    --dependency mvn:org.infinispan/infinispan-query-dsl/9.4.7.Final \
+    --dependency mvn:org.infinispan/infinispan-commons/9.4.7.Final \
+    --dependency mvn:org.codehaus.groovy/groovy-json/2.5.5 \
+    --trait service.auto=false \
+    --trait service.port=8080 \
+    --trait gc.enabled=false \
+    --dev \
     services/damage-service.groovy
 */
 
@@ -45,7 +59,6 @@ def cachePort  = 11222
 def cacheCfg   = new ConfigurationBuilder()
     .addServer().host(cacheHost).port(cachePort)
     .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
-    .nearCache().mode(NearCacheMode.INVALIDATED).maxEntries(100)
     .build()
 
 def cacheMgr   = new RemoteCacheManager(cacheCfg)
