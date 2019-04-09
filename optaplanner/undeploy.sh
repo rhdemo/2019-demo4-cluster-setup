@@ -1,2 +1,2 @@
 #!/bin/bash
-oc delete all -l app=optaplanner-demo
+oc delete all,templates -l app=optaplanner-demo
