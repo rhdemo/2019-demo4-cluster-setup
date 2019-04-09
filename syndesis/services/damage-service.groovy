@@ -78,8 +78,11 @@ def applyDamage = {
     def cname   = "machine-${it.in.body.machineId}"
     def gamecfg = cache['game']
 
-    if (gamecfg != null) {
-        def    config  = mapper.readValue(gamecfg, Map.class)        
+    if (gamecfg != null && kind != null) {
+        def config = mapper.readValue(gamecfg, Map.class)
+        
+        logger.info("${cname} ${kind} ${config}")
+
         double damage  = config.damage."${kind}"
         double multipl = config.damageMultiplier
         long   tdamage = damage * multipl * 1_000_000_000_000_000_000
@@ -89,8 +92,13 @@ def applyDamage = {
         counterMgr.getStrongCounter(cname).addAndGet(-tdamage).thenAccept {
             counter -> logger.info('machine-{} value: {}', it.in.body.machineId, counter)
         }
-    } else {
+    }
+    
+    if (gamecfg == null) { 
         logger.warn("No game config found")
+    }
+    if (kind == null) { 
+        logger.warn("No kind found")
     }
 }
 
@@ -110,11 +118,11 @@ rest {
         post()
             .consumes('application/json')
             .produces('application/json')
-            .to('seda:applyDamage')
+            .to('direct:applyDamage')
     }
 }
 
-from('seda:applyDamage?concurrentConsumers=20')
+from('direct:applyDamage')
     .unmarshal().json(JsonLibrary.Jackson, Map.class)
     .process(applyDamage as Processor)
     .to('log:applyDamage')
