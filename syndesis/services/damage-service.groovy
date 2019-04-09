@@ -74,16 +74,21 @@ def cache      = cacheMgr.getCache()
 def applyDamage = {
     def kind    = it.in.body.vibrationClass
     def cname   = "machine-${it.in.body.machineId}"
-    def config  = mapper.readValue(cache['game'], Map.class)
-    
-    double damage  = config.damage."${kind}"
-    double multipl = config.damageMultiplier
-    long   tdamage = damage * multipl * 1_000_000_000_000_000_000
+    def gamecfg = cache['game']
 
-    logger.info("${cname} ${kind} ${damage} ${multipl} ${tdamage}")
+    if (gamecfg != null) {
+        def    config  = mapper.readValue(gamecfg, Map.class)        
+        double damage  = config.damage."${kind}"
+        double multipl = config.damageMultiplier
+        long   tdamage = damage * multipl * 1_000_000_000_000_000_000
 
-    counterMgr.getStrongCounter(cname).addAndGet(-tdamage).thenAccept {
-        counter -> logger.info('machine-{} value: {}', it.in.body.machineId, counter)
+        logger.info("${cname} ${kind} ${damage} ${multipl} ${tdamage}")
+
+        counterMgr.getStrongCounter(cname).addAndGet(-tdamage).thenAccept {
+            counter -> logger.info('machine-{} value: {}', it.in.body.machineId, counter)
+        }
+    } else {
+        logger.warn("No game config found")
     }
 }
 
