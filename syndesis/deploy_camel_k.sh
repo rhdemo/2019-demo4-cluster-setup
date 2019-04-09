@@ -122,9 +122,7 @@ oc apply -n ${TARGET_PROJECT} -f - <<EOF
 apiVersion: camel.apache.org/v1alpha1
 kind: Integration
 metadata:
-  creationTimestamp: null
   name: load
-  namespace: syndesis
 spec:
   replicas: 0
   sources:

@@ -135,3 +135,24 @@ rm tmp_config.yaml
 loop oc patch -n ${TARGET_PROJECT} is syndesis-server --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-server:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is syndesis-meta --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-meta:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is oauth-proxy --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/openshift/origin-oauth-proxy:latest"}]'
+
+#
+# knative sources
+#
+oc apply --force -n ${TARGET_PROJECT} -f - <<EOF
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: KafkaSource
+metadata:
+  name: sensorstream-source
+spec:
+  consumerGroup: syndesis
+  bootstrapServers: demo2019-kafka-bootstrap.strimzi-demo.svc.cluster.local:9092
+  topics: sensorstream-ai
+  net:
+    tls:
+      enable: false
+  sink:
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Service
+    name: i-sensorstream-dumper
+EOF
