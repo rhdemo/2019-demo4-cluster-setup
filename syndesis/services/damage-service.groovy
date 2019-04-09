@@ -4,9 +4,9 @@ kamel run \
     --profile openshift \
     --dependency camel-netty4-http \
     --dependency camel-jackson \
-    --dependency mvn:org.infinispan/infinispan-client-hotrod/9.4.7.Final \
-    --dependency mvn:org.infinispan/infinispan-query-dsl/9.4.7.Final \
-    --dependency mvn:org.infinispan/infinispan-commons/9.4.7.Final \
+    --dependency mvn:org.infinispan/infinispan-client-hotrod/9.4.12.Final \
+    --dependency mvn:org.infinispan/infinispan-query-dsl/9.4.12.Final \
+    --dependency mvn:org.infinispan/infinispan-commons/9.4.12.Final \
     --dependency mvn:org.codehaus.groovy/groovy-json/2.5.5 \
     --trait service.auto=false \
     --trait service.port=8080 \
@@ -18,9 +18,9 @@ kamel run \
     --profile openshift \
     --dependency camel-netty4-http \
     --dependency camel-jackson \
-    --dependency mvn:org.infinispan/infinispan-client-hotrod/9.4.7.Final \
-    --dependency mvn:org.infinispan/infinispan-query-dsl/9.4.7.Final \
-    --dependency mvn:org.infinispan/infinispan-commons/9.4.7.Final \
+    --dependency mvn:org.infinispan/infinispan-client-hotrod/9.4.12.Final \
+    --dependency mvn:org.infinispan/infinispan-query-dsl/9.4.12.Final \
+    --dependency mvn:org.infinispan/infinispan-commons/9.4.12.Final \
     --dependency mvn:org.codehaus.groovy/groovy-json/2.5.5 \
     --trait service.auto=false \
     --trait service.port=8080 \
