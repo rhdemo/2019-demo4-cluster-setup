@@ -43,7 +43,7 @@ objects:
       - name: latest-release
         from:
           kind: DockerImage
-          name: apicurio/apicurio-studio-api:latest-release
+          name: quay.io/redhatdemo/apicurio-studio-api:latest-snapshot
         importPolicy:
           scheduled: true
 - apiVersion: v1
@@ -55,7 +55,7 @@ objects:
       - name: latest-release
         from:
           kind: DockerImage
-          name: apicurio/apicurio-studio-ws:latest-release
+          name: quay.io/redhatdemo/apicurio-studio-ws:latest-snapshot
         importPolicy:
           scheduled: true
 - apiVersion: v1
@@ -67,7 +67,7 @@ objects:
       - name: latest-release
         from:
           kind: DockerImage
-          name: apicurio/apicurio-studio-ui:latest-release
+          name: quay.io/redhatdemo/apicurio-studio-ui:latest-snapshot
         importPolicy:
           scheduled: true
 - apiVersion: v1
