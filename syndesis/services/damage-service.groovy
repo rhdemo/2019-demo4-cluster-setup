@@ -25,6 +25,7 @@ kamel run \
     --trait service.auto=false \
     --trait service.port=8080 \
     --trait gc.enabled=false \
+    --env JAVA_OPTIONS="-Dquarkus.log.console.level=DEBUG -Dquarkus.log.category.\"org.apache.camel\".level=DEBUG" \
     --dev \
     services/damage-service.groovy
 */
