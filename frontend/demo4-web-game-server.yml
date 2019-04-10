@@ -27,11 +27,8 @@ parameters:
     value: http://demo4-gesture:8080/training
     required: true
   - name: PREDICTION_URL
-    value: http://demo4-gesture:8080/predict
+    value: http://istio-ingressgateway.istio-system.svc.cluster.local/model/predict
     required: true
-#  - name: PREDICTION_URL
-#    value: http://istio-ingressgateway.istio-system.svc.cluster.local/model/predict
-#    required: true
   - name: KAFKA_BROKER_LIST_HOST
     value: demo2019-kafka-brokers.strimzi-demo.svc.cluster.local
     required: true
