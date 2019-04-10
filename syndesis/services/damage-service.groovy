@@ -13,6 +13,8 @@ kamel run \
     --trait gc.enabled=false \
     services/damage-service.groovy
 
+--env JAVA_OPTIONS="-Dquarkus.log.console.level=DEBUG -Dquarkus.log.category.\"org.apache.camel\".level=DEBUG" \
+
 kamel run \
     --name damage-service \
     --profile openshift \
@@ -25,7 +27,8 @@ kamel run \
     --trait service.auto=false \
     --trait service.port=8080 \
     --trait gc.enabled=false \
-    --env JAVA_OPTIONS="-Dquarkus.log.console.level=DEBUG -Dquarkus.log.category.\"org.apache.camel\".level=DEBUG" \
+    --logging-level org.apache.camel=DEBUG \
+    --logging-level io.netty=DEBUG \
     --dev \
     services/damage-service.groovy
 */
