@@ -11,3 +11,10 @@ oc create configmap datagrid-config --from-file=$RESOURCE_DIR/config
 oc new-app datagrid-service -p APPLICATION_USER=$USER  -p APPLICATION_PASSWORD=$PASS  -p NUMBER_OF_INSTANCES=$INSTANCES -p IMAGE=$IMAGE
 oc expose svc/datagrid-service --name=console --port=console
 oc expose svc/datagrid-service --name=console-rest --path=/rest --port=http --hostname=$(oc get route console -o=go-template='{{ .spec.host }}')
+
+# Initialise default cache with game config
+while [ "$(oc get statefulset datagrid-service -o jsonpath='{.status.readyReplicas}')" != "$INSTANCES" ]; do
+    echo "Waiting for statefulset to have $INSTANCES readyReplicas"
+    sleep 5
+done
+oc exec datagrid-service-0 -- curl -X POST -d @/opt/datagrid/standalone/configuration/game-config.json -H application/json http://datagrid-service.datagrid-demo.svc.cluster.local:8080/rest/default/game
