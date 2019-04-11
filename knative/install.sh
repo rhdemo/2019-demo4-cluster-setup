@@ -6,8 +6,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 REPO="$DIR/.repo"
 rm -rf "$REPO"
-git clone https://github.com/openshift-cloud-functions/knative-operators "$REPO"
-pushd $REPO; git checkout openshift-v0.3.0 2>/dev/null; popd
+# Demo hacks attack again!
+git clone https://github.com/bbrowning/knative-operators "$REPO"
+pushd $REPO; git checkout demo2019 2>/dev/null; popd
 
 # This is a direct copy of $REPO/etc/scripts/install.sh except for a
 # change to not install Knative Eventing since it doesn't work with
@@ -30,7 +31,7 @@ install_knative serving
 # This ends up not actually creating the needed stuff, but it does get
 # our CRDs applied and the namespace created
 install_knative eventing
-oc apply -n knative-eventing -f https://raw.githubusercontent.com/openshift-cloud-functions/knative-operators/master/etc/hacks/knative-eventing-0.3.0.yaml
+oc apply -n knative-eventing -f https://raw.githubusercontent.com/bbrowning/knative-operators/demo2019/etc/hacks/knative-eventing-0.3.0.yaml
 
 #
 # END EVENTING AND OLM HACK
@@ -53,8 +54,6 @@ wait_for_all_pods knative-serving
 # and copy the image value here
 SERVING_DEMO_CONTROLLER_IMAGE="docker.io/bbrowning/controller-43f0364ab2f6dab17267e80a1f6a4adc@sha256:881ff60149619af91f70dcd4d18d55e4810c4450d4219ba82def5411fc9a2e59"
 oc patch deployment controller -n knative-serving -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\": \"controller\", \"image\":\"$SERVING_DEMO_CONTROLLER_IMAGE\"}]}}}}"
-
-wait_for_all_pods knative-serving
 
 #
 # END SERVING AND ISTIO MESH HACK
