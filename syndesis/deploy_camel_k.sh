@@ -107,6 +107,9 @@ spec:
     contexts:
     - knative
   traits:
+    container:
+      configuration:
+        request-cpu: "75m"
     gc:
       configuration:
         enabled: "false"
@@ -143,4 +146,19 @@ spec:
           .log('Sending: ${body}')
           .to("knative:endpoint/i-sensor-to-damagex")
     name: load.groovy
+EOF
+
+oc apply -n ${TARGET_PROJECT} -f - <<EOF
+apiVersion: camel.apache.org/v1alpha1
+kind: Integration
+metadata:
+  name: delayer
+spec:
+  profile: OpenShift
+  sources:
+  - content: |
+      from('netty4-http://0.0.0.0:8080')
+          .delay().constant(1000)
+          .log('delayed')
+    name: delayer.groovy
 EOF
