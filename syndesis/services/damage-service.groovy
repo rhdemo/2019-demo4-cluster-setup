@@ -84,18 +84,20 @@ def applyDamage = {
 
     if (gamecfg != null && kind != null) {
         def config = mapper.readValue(gamecfg, Map.class)
+        def countr = counterMgr.getStrongCounter(cname)
         
-        logger.info("${cname} ${kind} ${config}")
-
         double damage  = config.damage."${kind}"
         double multipl = config.damageMultiplier
         long   tdamage = damage * multipl * 1_000_000_000_000_000_000
 
-        logger.info("${cname} ${kind} ${damage} ${multipl} ${tdamage}")
-
-        counterMgr.getStrongCounter(cname).addAndGet(-tdamage).thenAccept {
-            counter -> logger.info('machine-{} value: {}', it.in.body.machineId, counter)
-        }
+        logger.info("${cname}  ${config} ${kind} ${damage} ${multipl} ${tdamage}")
+        
+        countr.getValue().thenAccept({
+            value -> logger.info('machine-{} old value: {}', it.in.body.machineId, value)
+        }).get()
+        countr.addAndGet(-tdamage).thenAccept({
+            value -> logger.info('machine-{} new value: {}', it.in.body.machineId, value)
+        }).get()
     }
     
     if (gamecfg == null) { 
