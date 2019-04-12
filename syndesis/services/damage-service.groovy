@@ -1,5 +1,5 @@
 /*
-kamel run \
+./kamel run \
     --name damage-service \
     --profile openshift \
     --dependency camel-netty4-http \
@@ -50,12 +50,6 @@ import org.infinispan.counter.api.StrongCounter
 import org.apache.camel.model.dataformat.JsonLibrary
 import org.apache.camel.Processor
 
-// *********************************************
-//
-// Setup
-//
-// *********************************************
-
 def logger     = org.slf4j.LoggerFactory.getLogger("damage-service")
 def mapper     = new com.fasterxml.jackson.databind.ObjectMapper()
 def cacheHost  = 'datagrid-service.datagrid-demo.svc.cluster.local'
@@ -70,12 +64,6 @@ def cacheCfg   = new ConfigurationBuilder()
 def cacheMgr   = new RemoteCacheManager(cacheCfg)
 def counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
 def cache      = cacheMgr.getCache()
-
-// *********************************************
-//
-// Functions
-//
-// *********************************************
 
 def applyDamage = {
     def kind    = it.in.body.vibrationClass
@@ -107,12 +95,6 @@ def applyDamage = {
         logger.warn("No kind found")
     }
 }
-
-// *********************************************
-//
-// Rest
-//
-// *********************************************
 
 rest {
     configuration {

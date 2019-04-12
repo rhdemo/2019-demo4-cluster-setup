@@ -1,0 +1,41 @@
+
+apiVersion: camel.apache.org/v1alpha1
+kind: Integration
+metadata:
+  name: damage-service-test
+spec:
+  profile: OpenShift
+  dependencies:
+  - camel:netty4-http
+  traits:
+    gc:
+      configuration:
+        enabled: "false"
+    service:
+      configuration:
+        auto: "false"
+        port: "8080"
+  sources:
+  - name: damage-service-test.groovy
+    content: |-
+      rest {
+          configuration {
+              port '8080'
+              component 'netty4-http'
+          }
+
+          path('/ApplyDamage') {
+              post()
+                  .consumes('application/json')
+                  .produces('application/json')
+                  .route()
+                      .log('aply delay')
+                      .process { 
+                          Thread.sleep(
+                              java.util.concurrent.ThreadLocalRandom.current().nextInt(500, 1000)
+                          ) 
+                      }
+                      .log('delayed...')
+                      .setBody().constant('delayed')
+          }
+      }

@@ -1,0 +1,87 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Damage Test Service",
+    "description": "Damage Test Service.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/ApplyDamage": {
+      "post": {
+        "summary": "Updates a machines health with the damage event.",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DamageRequest"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Applies the damage event."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "DamageRequest": {
+      "description": "Represents a request to apply damage to the state of a machine",
+      "required": [
+        "confidencePercentage",
+        "damage",
+        "downTimePrice",
+        "machineId",
+        "health",
+        "sensorId",
+        "vibrationClass"
+      ],
+      "type": "object",
+      "properties": {
+        "sensorId": {
+          "type": "string"
+        },
+        "machineId": {
+          "type": "number"
+        },
+        "vibrationClass": {
+          "type": "string"
+        },
+        "confidencePercentage": {
+          "type": "number"
+        },
+        "health": {
+          "type": "integer"
+        },
+        "downTimePrice": {
+          "type": "integer"
+        }
+      }
+    },
+    "DamageEvent": {
+      "description": "The representation of a damage event.",
+      "required": [
+        "damage",
+        "machineId"
+      ],
+      "type": "object",
+      "properties": {
+        "machineId": {
+          "type": "number"
+        },
+        "damage": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

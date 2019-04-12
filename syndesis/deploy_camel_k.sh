@@ -4,7 +4,7 @@ set -ex
 dir=$(dirname $0)
 source $dir/common.sh
 
-TARGET_PROJECT=${1:-camel-k}
+TARGET_PROJECT=${1:-syndesis}
 # TODO before the summit, use a tag, not master
 oc new-project ${TARGET_PROJECT} | true
 
@@ -45,7 +45,7 @@ loop oc replace --force -n ${TARGET_PROJECT} -f ${GITHUB_CONTENT}/deploy/operato
 #
 # Install custom bits
 #
-oc replace --force -n ${TARGET_PROJECT} -f - <<EOF
+oc apply --force -n ${TARGET_PROJECT} -f - <<EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -86,8 +86,7 @@ spec:
                   fieldPath: metadata.name
 EOF
 
-
-oc replace --force -n ${TARGET_PROJECT} -f - <<EOF
+oc apply --force -n ${TARGET_PROJECT} -f - <<EOF
 apiVersion: camel.apache.org/v1alpha1
 kind: IntegrationPlatform
 metadata:
@@ -106,6 +105,15 @@ spec:
   resources:
     contexts:
     - knative
+  configuration:
+  - type: property
+    value: logging.level.org.apache.camel=INFO
+  - type: property
+    value: logging.level.io.netty=INFO
+  - type: property
+    value: logging.level.org.apache.http=INFO
+  - type: property
+    value: logging.level.io.atlasmap=INFO
   traits:
     container:
       configuration:
@@ -119,46 +127,4 @@ spec:
         autoscaling-target: "1"
         max-scale: "100"
         min-scale: "0"
-EOF
-
-oc apply -n ${TARGET_PROJECT} -f - <<EOF
-apiVersion: camel.apache.org/v1alpha1
-kind: Integration
-metadata:
-  name: load
-spec:
-  replicas: 0
-  sources:
-  - content: |-
-      event = '''{
-          "sensorId": "360a3255-7b14-45b8-9624-8ee396a716c8",
-          "machineId": 3,
-          "vibrationClass": 1,
-          "confidencePercentage": 80
-      }'''
-
-      from("timer:clock?period=100")
-          .log('tick')
-          .setBody().constant(event)
-          .to("seda:queue?waitForTaskToComplete=Never")
-
-      from("seda:queue?concurrentConsumers=20")
-          .log('Sending: ${body}')
-          .to("knative:endpoint/i-sensor-to-damagex")
-    name: load.groovy
-EOF
-
-oc apply -n ${TARGET_PROJECT} -f - <<EOF
-apiVersion: camel.apache.org/v1alpha1
-kind: Integration
-metadata:
-  name: delayer
-spec:
-  profile: OpenShift
-  sources:
-  - content: |
-      from('netty4-http://0.0.0.0:8080')
-          .delay().constant(1000)
-          .log('delayed')
-    name: delayer.groovy
 EOF
