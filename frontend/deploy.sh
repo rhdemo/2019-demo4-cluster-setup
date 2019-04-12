@@ -21,6 +21,8 @@ then
     ADMIN_SERVER_REPLICAS=1
     DASHBOARD_UI_REPLICAS=1
     DASHBOARD_SERVER_REPLICAS=1
+    LEADERBOARD_UI_REPLICAS=1
+    LEADERBOARD_SERVER_REPLICAS=1
     S3_ENDPOINT=''
     S3_REGION=''
     S3_BUCKET=''
@@ -38,6 +40,8 @@ else
     ADMIN_SERVER_REPLICAS=2
     DASHBOARD_UI_REPLICAS=2
     DASHBOARD_SERVER_REPLICAS=2
+    LEADERBOARD_UI_REPLICAS=2
+    LEADERBOARD_SERVER_REPLICAS=2
     [[ -z "$S3_ENDPOINT" ]] && { echo "S3_ENDPOINT is missing. No training data will be written" ;}
     [[ -z "$S3_REGION" ]] && { echo "S3_REGION is missing. No training data will be written" ;}
     [[ -z "$S3_BUCKET" ]] && { echo "S3_BUCKET is missing. No training data will be written" ;}
@@ -93,4 +97,14 @@ oc process -f ${DIR}/demo4-web-game-ui.yml \
   -p KEY="${KEY}" \
   -p CERTIFICATE="${CERTIFICATE}" \
   -p CA_CERTIFICATE="${CA_CERTIFICATE}" \
+  | oc create -f -
+
+oc process -f ${DIR}/demo4-leaderboard-server.yml \
+  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-server:latest \
+  -p REPLICAS=${ADMIN_SERVER_REPLICAS} \
+  | oc create -f -
+
+oc process -f ${DIR}/demo4-leaderboard-ui.yml \
+  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-nginx:latest \
+  -p REPLICAS=${ADMIN_UI_REPLICAS} \
   | oc create -f -
