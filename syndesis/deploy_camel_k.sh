@@ -113,7 +113,9 @@ spec:
   - type: property
     value: logging.level.org.apache.http=INFO
   - type: property
-    value: logging.level.io.atlasmap=INFO
+    value: logging.level.io.atlasmap=INFO  
+  - type: property
+    value: camel.context.streamCaching=true
   traits:
     container:
       configuration:
