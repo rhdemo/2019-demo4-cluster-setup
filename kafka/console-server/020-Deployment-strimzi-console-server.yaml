@@ -17,6 +17,8 @@ spec:
         env:
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: my-cluster-kafka-bootstrap:9092
+        - name: STRIMZI_LOG_LEVEL
+          value: INFO
         ports:
           - name: http
             containerPort: 8080
