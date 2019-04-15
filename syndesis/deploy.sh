@@ -15,7 +15,5 @@ oc new-project ${TARGET_PROJECT} | true
 #
 bash $dir/deploy_camel_k.sh
 bash $dir/deploy_syndesis.sh
-bash $dir/deploy_syndesis_ui_config.sh
-bash $dir/deploy_syndesis_seerver_config.sh
 bash $dir/deploy_sources.sh
 bash $dir/deploy_services.sh
