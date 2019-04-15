@@ -7,7 +7,11 @@ spec:
   profile: OpenShift
   dependencies:
   - camel:netty4-http
-  traits:
+  traits:  
+    affinity:
+      configuration:
+        enabled: "true"
+        pod-anti-affinity: "true"
     gc:
       configuration:
         enabled: "false"
@@ -15,6 +19,7 @@ spec:
       configuration:
         auto: "false"
         port: "8080"
+  replicas: 3
   sources:
   - name: damage-service-test.groovy
     content: |-

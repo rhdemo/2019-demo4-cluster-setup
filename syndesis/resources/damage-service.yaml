@@ -3,6 +3,7 @@ kind: Integration
 metadata:
   name: damage-service
 spec:
+  replicas: 3
   dependencies:
   - camel:netty4-http
   - camel:jackson
@@ -96,6 +97,10 @@ spec:
           .process(applyDamage as Processor)
           .to('log:applyDamage')
   traits:
+    affinity:
+      configuration:
+        enabled: "true"
+        pod-anti-affinity: "true"
     gc:
       configuration:
         enabled: "false"
