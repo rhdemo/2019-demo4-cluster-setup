@@ -127,3 +127,21 @@ rm tmp_config.yaml
 loop oc patch -n ${TARGET_PROJECT} is syndesis-server --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-server:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is syndesis-meta --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-meta:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is oauth-proxy --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/openshift/origin-oauth-proxy:latest"}]'
+
+
+#
+# Patch syndesis-ui-config
+#
+loop oc get configmap syndesis-ui-config -o jsonpath={.data."config\.json"} > /tmp/syndesis-ui-config.json
+if [ $(grep "FuseOnlineLogo_Black" /tmp/syndesis-ui-config.json | wc -l) -eq 0 ]; then
+
+  jq '.branding += { "logoWhiteBg": "", "logoDarkBg": "", "iconWhiteBg": "assets/images/FuseOnlineLogo_Black.svg", "iconDarkBg": "assets/images/FuseOnlineLogo_White.svg", "appName": "Ignite", "productBuild": true }' /tmp/syndesis-ui-config.json > /tmp/config.json
+  
+  oc create cm syndesis-ui-config --from-file=/tmp/config.json --dry-run -o json \
+    | jq 'with_entries(select(.key == "data"))' > /tmp/syndesis-ui-config.json 
+    
+  loop oc patch cm/syndesis-ui-config -p $(cat /tmp/syndesis-ui-config.json)
+fi
+
+rm -f /tmp/syndesis-ui-config.json
+rm -f /tmp/config.json
