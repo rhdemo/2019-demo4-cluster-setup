@@ -123,6 +123,10 @@ spec:
     gc:
       configuration:
         enabled: "false"
+    istio:
+      configuration:
+        enabled: "true"
+        inject: "false"
     knative-service:
       configuration:
         autoscaling-metric: concurrency
