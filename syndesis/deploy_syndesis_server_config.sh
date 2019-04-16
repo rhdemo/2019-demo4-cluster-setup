@@ -4,7 +4,7 @@ set -ex
 dir=$(dirname $0)
 source $dir/common.sh
 
-TARGET_PROJECT=syndesis
+TARGET_PROJECT=${1:-syndesis}
 
 oc new-project ${TARGET_PROJECT} | true
 
@@ -21,7 +21,7 @@ oc new-project ${TARGET_PROJECT} | true
 # rm tmp_config.yaml
 
 oc get configmap syndesis-server-config -o yaml \
-    | > /tmp/syndesis-server-config.yml
+    > /tmp/syndesis-server-config.yml
 
 cat /tmp/syndesis-server-config.yml \
     | yq r - 'data[application.yml]' \
