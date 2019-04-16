@@ -13,6 +13,9 @@ If needed, images can be rebuilt from source:
 - Syndesis: https://github.com/rhdemo/syndesis/blob/summit-2019-1.6.x/SUMMIT-2019.md
 - Camel K: https://github.com/rhdemo/camel-k/blob/summit-2019/SUMMIT-2019.md
 
+Tools required:
+- https://stedolan.github.io/jq/
+- https://github.com/mikefarah/yq
 
 syndesis-server-config
 ```yaml
