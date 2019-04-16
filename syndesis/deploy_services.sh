@@ -4,7 +4,7 @@ set -ex
 dir=$(dirname $0)
 source $dir/common.sh
 
-TARGET_PROJECT=syndesis
+TARGET_PROJECT=${1:-syndesis}
 # TODO before the summit, use a tag, not master
 oc new-project ${TARGET_PROJECT} | true
 
