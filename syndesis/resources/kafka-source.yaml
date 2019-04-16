@@ -12,4 +12,5 @@ spec:
   sink:
     apiVersion: serving.knative.dev/v1alpha1
     kind: Service
-    name: i-sensor-to-damage
+    name: i-sensorstream-dumper
+
