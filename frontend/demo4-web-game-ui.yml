@@ -18,6 +18,14 @@ parameters:
   - name: KEY
   - name: CERTIFICATE
   - name: CA_CERTIFICATE
+  - name: CONTAINER_REQUEST_CPU
+    value: 500m
+  - name: CONTAINER_REQUEST_MEMORY
+    value: 1Gi
+  - name: CONTAINER_LIMIT_CPU
+    value: "1"
+  - name: CONTAINER_LIMIT_MEMORY
+    value: 2Gi
 
 objects:
   - apiVersion: v1
@@ -48,6 +56,13 @@ objects:
                 - containerPort: 8080
                   name: http
                   protocol: TCP
+              resources:
+                requests:
+                  cpu: ${CONTAINER_REQUEST_CPU}
+                  memory: ${CONTAINER_REQUEST_MEMORY}
+                limits:
+                  cpu: ${CONTAINER_LIMIT_CPU}
+                  memory: ${CONTAINER_LIMIT_MEMORY}
       triggers:
         - type: ConfigChange
 

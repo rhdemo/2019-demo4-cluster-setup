@@ -55,6 +55,14 @@ parameters:
     description: S3 Secret Access Key
     displayName: S3 Secret Access Key
     required: false
+  - name: CONTAINER_REQUEST_CPU
+    value: 200m
+  - name: CONTAINER_REQUEST_MEMORY
+    value: 500Mi
+  - name: CONTAINER_LIMIT_CPU
+    value: 500m
+  - name: CONTAINER_LIMIT_MEMORY
+    value: 1Gi
 
 objects:
   - apiVersion: v1
@@ -97,7 +105,13 @@ objects:
               image: ${IMAGE_REPOSITORY}
               imagePullPolicy: Always
               name: ${APPLICATION_NAME}
-              resources: {}
+              resources:
+                requests:
+                  cpu: ${CONTAINER_REQUEST_CPU}
+                  memory: ${CONTAINER_REQUEST_MEMORY}
+                limits:
+                  cpu: ${CONTAINER_LIMIT_CPU}
+                  memory: ${CONTAINER_LIMIT_MEMORY}
               terminationMessagePath: /dev/termination-log
               readinessProbe:
                 httpGet:
