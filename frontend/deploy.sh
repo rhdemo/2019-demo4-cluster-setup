@@ -14,40 +14,40 @@ then
     KEY=''
     CERTIFICATE=''
     CA_CERTIFICATE=''
-    GESTURE_REPLICAS=1
-    GAME_UI_REPLICAS=1
-    GAME_SERVER_REPLICAS=1
-    ADMIN_UI_REPLICAS=1
-    ADMIN_SERVER_REPLICAS=1
-    DASHBOARD_UI_REPLICAS=1
-    DASHBOARD_SERVER_REPLICAS=1
-    LEADERBOARD_UI_REPLICAS=1
-    LEADERBOARD_SERVER_REPLICAS=1
     S3_ENDPOINT=''
     S3_REGION=''
     S3_BUCKET=''
     S3_PREFIX=''
     S3_ACCESS_KEY_ID=''
     S3_SECRET_ACCESS_KEY=''
+    GESTURE_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    GAME_SERVER_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    GAME_UI_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    ADMIN_SERVER_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    ADMIN_UI_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    DASHBOARD_SERVER_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    DASHBOARD_UI_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    LEADERBOARD_SERVER_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
+    LEADERBOARD_UI_PARAMS='-p REPLICAS=1 -p CONTAINER_REQUEST_CPU=100m -p CONTAINER_REQUEST_MEMORY=200Mi -p CONTAINER_LIMIT_CPU=200m -p CONTAINER_LIMIT_MEMORY=500Mi'
 else
     KEY=$(cat ${DIR}/../key.pem)
     CERTIFICATE=$(cat ${DIR}/../cert.pem)
     CA_CERTIFICATE=$(cat ${DIR}/../ca.pem)
-    GESTURE_REPLICAS=2
-    GAME_UI_REPLICAS=5
-    GAME_SERVER_REPLICAS=10
-    ADMIN_UI_REPLICAS=2
-    ADMIN_SERVER_REPLICAS=2
-    DASHBOARD_UI_REPLICAS=2
-    DASHBOARD_SERVER_REPLICAS=2
-    LEADERBOARD_UI_REPLICAS=2
-    LEADERBOARD_SERVER_REPLICAS=2
     [[ -z "$S3_ENDPOINT" ]] && { echo "S3_ENDPOINT is missing. No training data will be written" ;}
     [[ -z "$S3_REGION" ]] && { echo "S3_REGION is missing. No training data will be written" ;}
     [[ -z "$S3_BUCKET" ]] && { echo "S3_BUCKET is missing. No training data will be written" ;}
     [[ -z "$S3_PREFIX" ]] && { echo "S3_PREFIX is missing. No training data will be written" ;}
     [[ -z "$S3_ACCESS_KEY_ID" ]] && { echo "S3_ACCESS_KEY_ID is missing. No training data will be written" ;}
     [[ -z "$S3_SECRET_ACCESS_KEY" ]] && { echo "S3_SECRET_ACCESS_KEY is missing. No training data will be written" ;}
+    GESTURE_PARAMS='-p REPLICAS=2'
+    GAME_SERVER_PARAMS='-p REPLICAS=10'
+    GAME_UI_PARAMS='-p REPLICAS=5'
+    ADMIN_SERVER_PARAMS='-p REPLICAS=2'
+    ADMIN_UI_PARAMS='-p REPLICAS=2'
+    DASHBOARD_SERVER_PARAMS='-p REPLICAS=2'
+    DASHBOARD_UI_PARAMS='-p REPLICAS=2'
+    LEADERBOARD_SERVER_PARAMS='-p REPLICAS=2'
+    LEADERBOARD_UI_PARAMS='-p REPLICAS=2'
 fi
 
 SECRET_KEY=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '\n'; echo)
@@ -56,7 +56,7 @@ SECRET_KEY=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '
 oc new-project web-game-demo
 
 oc process -f ${DIR}/demo4-gesture.yml \
-  -p REPLICAS=${GESTURE_REPLICAS} \
+  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-admin-server:latest \
   -p S3_ENDPOINT=${S3_ENDPOINT} \
   -p S3_REGION=${S3_REGION} \
   -p S3_BUCKET=${S3_BUCKET} \
@@ -64,47 +64,48 @@ oc process -f ${DIR}/demo4-gesture.yml \
   -p S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID} \
   -p S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY} \
   -p SECRET_KEY=${SECRET_KEY} \
+  ${GESTURE_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-admin-server.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-admin-server:latest \
-  -p REPLICAS=${ADMIN_SERVER_REPLICAS} \
+  ${ADMIN_SERVER_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-admin-ui.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-admin-nginx:latest \
-  -p REPLICAS=${ADMIN_UI_REPLICAS} \
+  ${ADMIN_UI_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-dashboard-server.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-dashboard-server:latest \
-  -p REPLICAS=${DASHBOARD_SERVER_REPLICAS} \
+  ${DASHBOARD_SERVER_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-dashboard-ui.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-dashboard-nginx:latest \
-  -p REPLICAS=${DASHBOARD_UI_REPLICAS} \
+  ${DASHBOARD_UI_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-web-game-server.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-web-game-server:latest \
-  -p REPLICAS=${GAME_SERVER_REPLICAS} \
+  ${GAME_SERVER_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-web-game-ui.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-web-game-nginx:latest \
-  -p REPLICAS=${GAME_UI_REPLICAS} \
   -p KEY="${KEY}" \
   -p CERTIFICATE="${CERTIFICATE}" \
   -p CA_CERTIFICATE="${CA_CERTIFICATE}" \
+  ${GAME_UI_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-leaderboard-server.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-server:latest \
-  -p REPLICAS=${ADMIN_SERVER_REPLICAS} \
+  ${LEADERBOARD_SERVER_PARAMS} \
   | oc create -f -
 
 oc process -f ${DIR}/demo4-leaderboard-ui.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-nginx:latest \
-  -p REPLICAS=${ADMIN_UI_REPLICAS} \
+  ${LEADERBOARD_UI_PARAMS} \
   | oc create -f -
