@@ -80,6 +80,13 @@ spec:
           name: prometheus-config
         - mountPath: /etc/config/alerting-rules
           name: alerting-rules
+        resources:
+          requests:
+            cpu: "2"
+            memory: 4Gi
+          limits:
+            cpu: "2"
+            memory: 4Gi
       volumes:
         - name: prometheus-data
           emptyDir: {}
