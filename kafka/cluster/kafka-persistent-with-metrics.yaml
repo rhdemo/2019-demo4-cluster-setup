@@ -26,6 +26,13 @@ spec:
       size: 100Gi
       deleteClaim: true
       storageClass: gp2
+    resources:
+      requests:
+        cpu: "2"
+        memory: 4Gi
+      limits:
+        cpu: "2"
+        memory: 4Gi
     metrics:
       # Inspired by config from Kafka 2.0.0 example rules:
       # https://github.com/prometheus/jmx_exporter/blob/master/example_configs/kafka-2_0_0.yml
@@ -136,6 +143,13 @@ spec:
       size: 100Gi
       deleteClaim: true
       storageClass: gp2
+    resources:
+      requests:
+        cpu: "1"
+        memory: 2Gi
+      limits:
+        cpu: "1"
+        memory: 2Gi
     metrics:
       # Inspired by Zookeeper rules
       # https://github.com/prometheus/jmx_exporter/blob/master/example_configs/zookeeper.yaml
@@ -164,5 +178,19 @@ spec:
       - pattern: "org.apache.ZooKeeperService<name0=StandaloneServer_port(\\d+), name1=(InMemoryDataTree)><>(\\w+)"
         name: "zookeeper_$2_$3"
   entityOperator:
-    topicOperator: {}
-    userOperator: {}
+    topicOperator:
+      resources:
+        requests:
+          memory: 256Mi
+          cpu: "0.1"
+        limits:
+          memory: 256Mi
+          cpu: "0.5"
+    userOperator:
+      resources:
+        requests:
+          memory: 256Mi
+          cpu: "0.1"
+        limits:
+          memory: 256Mi
+          cpu: "0.5"
