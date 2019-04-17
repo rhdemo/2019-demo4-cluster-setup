@@ -119,6 +119,7 @@ spec:
   traits:
     container:
       configuration:
+        limit-memory: 256Mi
         request-cpu: "75m"
     gc:
       configuration:
