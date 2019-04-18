@@ -1,20 +1,4 @@
 /*
-./kamel run \
-    --name damage-service \
-    --profile openshift \
-    --dependency camel-netty4-http \
-    --dependency camel-jackson \
-    --dependency mvn:org.infinispan/infinispan-client-hotrod/9.4.12.Final \
-    --dependency mvn:org.infinispan/infinispan-query-dsl/9.4.12.Final \
-    --dependency mvn:org.infinispan/infinispan-commons/9.4.12.Final \
-    --dependency mvn:org.codehaus.groovy/groovy-json/2.5.5 \
-    --trait service.auto=false \
-    --trait service.port=8080 \
-    --trait gc.enabled=false \
-    services/damage-service.groovy
-
---env JAVA_OPTIONS="-Dquarkus.log.console.level=DEBUG -Dquarkus.log.category.\"org.apache.camel\".level=DEBUG" \
-
 kamel run \
     --name damage-service \
     --profile openshift \
@@ -27,8 +11,6 @@ kamel run \
     --trait service.auto=false \
     --trait service.port=8080 \
     --trait gc.enabled=false \
-    --logging-level org.apache.camel=DEBUG \
-    --logging-level io.netty=DEBUG \
     --dev \
     services/damage-service.groovy
 */
@@ -106,11 +88,11 @@ rest {
         post()
             .consumes('application/json')
             .produces('application/json')
-            .to('direct:applyDamage')
+            .to('seda:applyDamage')
     }
 }
 
-from('direct:applyDamage')
+from('seda:applyDamage?concurrentConsumers=25')
     .unmarshal().json(JsonLibrary.Jackson, Map.class)
     .process(applyDamage as Processor)
     .to('log:applyDamage')
