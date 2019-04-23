@@ -9,7 +9,7 @@ spec:
 apiVersion: camel.apache.org/v1alpha1
 kind: Integration
 metadata:
-  name: i-sensor-to-damage-0
+  name: i-sensor-to-damage-O
 spec:
   context: camel-q
   sources:
