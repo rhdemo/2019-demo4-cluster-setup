@@ -1,0 +1,31 @@
+---
+apiVersion: camel.apache.org/v1alpha1
+kind: IntegrationContext
+metadata:
+  name: camel-q
+spec:
+  image: quay.io/lburgazzoli/camel-k-quarkus:latest
+---
+apiVersion: camel.apache.org/v1alpha1
+kind: Integration
+metadata:
+  name: i-sensor-to-damage-0
+spec:
+  context: camel-q
+  sources:
+  - content: |
+      var StringClass = Java.type('java.lang.String');
+
+      from('netty4-http:0.0.0.0:8080')
+          .convertBodyTo(StringClass)
+          .to('log:info?multiline=true')
+    name: consumer.js
+  traits:
+    deployer:
+      configuration:
+        kind: knative-service
+    knative-service:
+      configuration:
+        enabled: "true"
+        min-scale: "0"
+
