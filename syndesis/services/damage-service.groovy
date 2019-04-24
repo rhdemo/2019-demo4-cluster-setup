@@ -45,7 +45,7 @@ def cacheCfg   = new ConfigurationBuilder()
 
 def cacheMgr   = new RemoteCacheManager(cacheCfg)
 def counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
-def cache      = cacheMgr.getCache()
+def cache      = cacheMgr.getCache('game')
 
 def applyDamage = {
     def kind    = it.in.body.vibrationClass
