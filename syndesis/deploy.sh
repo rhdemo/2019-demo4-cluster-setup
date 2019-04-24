@@ -17,4 +17,5 @@ oc new-project ${TARGET_PROJECT} | true
 bash $dir/deploy_camel_k.sh ${TARGET_PROJECT}
 bash $dir/deploy_syndesis.sh ${TARGET_PROJECT}
 bash $dir/deploy_sources.sh ${TARGET_PROJECT}
+bash $dir/patch_sources_deployment.sh ${TARGET_PROJECT}
 bash $dir/deploy_services.sh ${TARGET_PROJECT}
