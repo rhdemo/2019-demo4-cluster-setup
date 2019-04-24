@@ -4,28 +4,43 @@ kind: IntegrationContext
 metadata:
   name: camel-q
 spec:
-  image: quay.io/lburgazzoli/camel-k-quarkus:latest
+  image: lburgazzoli/camel-k-quarkus:0.3.2-summit
 ---
 apiVersion: camel.apache.org/v1alpha1
 kind: Integration
 metadata:
-  name: i-sensor-to-damage-O
+  name: sensor-to-damage
 spec:
   context: camel-q
   sources:
   - content: |
-      var StringClass = Java.type('java.lang.String');
-
-      from('netty4-http:0.0.0.0:8080')
-          .convertBodyTo(StringClass)
-          .to('log:info?multiline=true')
-    name: consumer.js
+      <routes>
+          <route>
+              <from uri="netty4-http:0.0.0.0:8080"/>
+              <convertBodyTo type="java.lang.String"/>
+              <log message="${body}"/>
+          </route>
+      </routes>
+    name: consumer.xml
   traits:
+    container:
+      configuration:
+        request-memory: 500Mi
+        limit-memory: 300Mi
+        request-cpu: 75m
+        limit-cpu: 75m
     deployer:
       configuration:
         kind: knative-service
+    knative:
+      configuration:
+        enabled: "true"
+        endpoint-sources: "default"
     knative-service:
       configuration:
         enabled: "true"
+        autoscaling-target: "1"
+        autoscaling-metric: concurrency
         min-scale: "0"
+        max-scale: "100"
 

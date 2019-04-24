@@ -1,0 +1,7 @@
+<routes>
+    <route>
+        <from uri="netty4-http:0.0.0.0:8080"/>
+        <convertBodyTo type="java.lang.String"/>
+        <log message="${body}"/>
+    </route>
+</routes>

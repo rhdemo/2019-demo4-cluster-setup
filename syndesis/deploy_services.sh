@@ -10,4 +10,5 @@ oc new-project ${TARGET_PROJECT} | true
 
 oc apply -n ${TARGET_PROJECT} -f $dir/resources/damage-service.yaml
 oc apply -n ${TARGET_PROJECT} -f $dir/resources/damage-service-test.yaml
+oc apply -n ${TARGET_PROJECT} -f $dir/resources/camel-q.yaml
 #oc apply -n ${TARGET_PROJECT} -f $dir/resources/load.yaml
