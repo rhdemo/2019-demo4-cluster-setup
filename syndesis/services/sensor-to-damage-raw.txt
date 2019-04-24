@@ -9,7 +9,7 @@
     --trait knative-service.min-scale=0 \
     --trait knative-service.max-scale=100 \
     --trait container.request-memory=300Mi \
-    --trait container.limit-memory=400Mi \
+    --trait container.limit-memory=500Mi \
     --trait container.request-cpu=75m \
     --trait container.limit-cpu=75m \
     --context=camel-q  \

@@ -25,8 +25,8 @@ spec:
   traits:
     container:
       configuration:
-        request-memory: 500Mi
-        limit-memory: 300Mi
+        request-memory: 300Mi
+        limit-memory: 500Mi
         request-cpu: 75m
         limit-cpu: 75m
     deployer:
