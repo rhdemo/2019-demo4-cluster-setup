@@ -288,6 +288,16 @@
                     <off-heap/>
                 </memory>
             </distributed-cache>
+            <distributed-cache name="game">
+                <memory>
+                    <off-heap/>
+                </memory>
+            </distributed-cache>
+            <distributed-cache name="leaderboard">
+                <memory>
+                    <off-heap/>
+                </memory>
+            </distributed-cache>
             <counters reliability="CONSISTENT">
                 <strong-counter name="machine-0" initial-value="1000000000000000000" storage="VOLATILE">
                     <lower-bound value="0"/>
