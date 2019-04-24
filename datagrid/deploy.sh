@@ -22,4 +22,4 @@ while [ "$(oc get statefulset datagrid-service -o jsonpath='{.status.readyReplic
     echo "Waiting for statefulset to have $INSTANCES readyReplicas"
     sleep 5
 done
-oc exec datagrid-service-0 -- curl -X POST -d @/opt/datagrid/standalone/configuration/game-config.json -H application/json http://datagrid-service.datagrid-demo.svc.cluster.local:8080/rest/default/game
+oc exec datagrid-service-0 -- curl -X POST -d @/opt/datagrid/standalone/configuration/game-config.json -H application/json http://datagrid-service.datagrid-demo.svc.cluster.local:8080/rest/game/game
