@@ -56,18 +56,23 @@ def applyDamage = {
         def config = mapper.readValue(gamecfg, Map.class)
         def countr = counterMgr.getStrongCounter(cname)
         
-        double damage  = config.damage."${kind}"
-        double multipl = config.damageMultiplier
-        long   tdamage = damage * multipl * 1_000_000_000_000_000_000
+        Double damage  = config.damage."${kind}"
+        Double multipl = config.damageMultiplier
+
+        if (damage == null) {
+            logger.warn("No damage defined for ${kind}")
+            return
+        }
+        if (multipl == null) {
+            logger.warn("No damage multiplier defined for ${kind}")
+            return
+        }
+
+        long tdamage = damage.doubleValue() * multipl.doubleValue() * 1_000_000_000_000_000_000
 
         logger.info("${cname}  ${config} ${kind} ${damage} ${multipl} ${tdamage}")
         
-        countr.getValue().thenAccept({
-            value -> logger.info('machine-{} old value: {}', it.in.body.machineId, value)
-        }).get()
-        countr.addAndGet(-tdamage).thenAccept({
-            value -> logger.info('machine-{} new value: {}', it.in.body.machineId, value)
-        }).get()
+        countr.addAndGet(-tdamage).get()
     }
     
     if (gamecfg == null) { 
@@ -94,5 +99,6 @@ rest {
 
 from('seda:applyDamage?concurrentConsumers=25')
     .unmarshal().json(JsonLibrary.Jackson, Map.class)
+    .log('${body}')
     .process(applyDamage as Processor)
-    .to('log:applyDamage')
+    .to('log:damaged')
