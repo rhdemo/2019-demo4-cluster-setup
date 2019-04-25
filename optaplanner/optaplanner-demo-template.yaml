@@ -56,7 +56,13 @@ objects:
           - containerPort: 8778
             name: jolokia
             protocol: TCP
-          resources: {}
+          resources:
+            requests:
+              cpu: 2000m
+              memory: 1000Mi
+            limits:
+              cpu: 2000m
+              memory: 2000Mi
           securityContext:
             privileged: false
           terminationMessagePath: /dev/termination-log
