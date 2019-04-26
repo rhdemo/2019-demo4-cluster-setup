@@ -10,6 +10,7 @@ oc apply -f $DIR/monitoring/alerting-rules.yaml -n $NAMESPACE
 oc apply -f $DIR/monitoring/prometheus-deploy.yaml -n $NAMESPACE
 rm $DIR/monitoring/prometheus-deploy.yaml
 oc apply -f $DIR/monitoring/alertmanager.yaml -n $NAMESPACE
+oc expose service/prometheus -n $NAMESPACE
 
 echo "Waiting for Prometheus server to be ready..."
 oc rollout status deployment/prometheus -w -n $NAMESPACE
