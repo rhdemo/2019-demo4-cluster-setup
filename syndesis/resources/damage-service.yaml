@@ -27,35 +27,60 @@ spec:
       import org.infinispan.commons.marshall.StringMarshaller
       import org.infinispan.counter.exception.CounterOutOfBoundsException
       import java.nio.charset.StandardCharsets
+      import java.util.concurrent.atomic.AtomicReference
 
-      def logger     = org.slf4j.LoggerFactory.getLogger("damage-service")
-      def mapper     = new com.fasterxml.jackson.databind.ObjectMapper()
-      def cacheHost  = 'datagrid-service.datagrid-demo.svc.cluster.local'
-      def cachePort  = 11222
-      def cacheCfg   = new ConfigurationBuilder()
+      logger     = org.slf4j.LoggerFactory.getLogger("damage-service")
+      mapper     = new com.fasterxml.jackson.databind.ObjectMapper()
+      cacheHost  = 'datagrid-service.datagrid-demo.svc.cluster.local'
+      cachePort  = 11222
+      cacheCfg   = new ConfigurationBuilder()
               .addServer().host(cacheHost).port(cachePort)
               .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
               .clientIntelligence(ClientIntelligence.BASIC)
               .nearCache().maxEntries(100)
               .build()
 
-      def cacheMgr   = new RemoteCacheManager(cacheCfg)
-      def counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
-      def cache      = cacheMgr.getCache('game')
+      cacheMgr   = new RemoteCacheManager(cacheCfg)
+      counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
+
+      //
+      // Read the game config, and continue reloading it.
+      //
+      cache  = cacheMgr.getCache('game')
+      config = new AtomicReference<Map>()
+
+      def loadConfig() { 
+          String gamecfg = cache['game']
+          if (gamecfg == null) {
+              logger.warn("No game config found")
+              System.exit(1)
+          }
+          config.set(mapper.readValue(gamecfg, Map.class))
+      }
+
+      loadConfig()
+
+      from('timer:tick')
+          .process{ loadConfig() }
+          .log('reloaded config')
 
       def applyDamage = new AsyncProcessor() {
           @Override
           boolean process(Exchange exchange, AsyncCallback callback) {
               String kind    = exchange.message.body.vibrationClass
-              String cname   = "machine-${exchange.message.body.machineId}"
-              String gamecfg = cache['game']
+              if (kind == null) {
+                  
+                  logger.warn("No kind found")
+                  callback.done(true)
+                  return true;
 
-              if (gamecfg != null && kind != null) {
-                  def config = mapper.readValue(gamecfg, Map.class)
+              } else {
+
+                  String cname   = "machine-${exchange.message.body.machineId}"
                   def scount = counterMgr.getStrongCounter(cname)
 
-                  Double damage  = config.damage."${kind}"
-                  Double multipl = config.damageMultiplier
+                  Double damage  = config.get().damage."${kind}"
+                  Double multipl = config.get().damageMultiplier
 
                   if (damage == null) {
                       logger.warn("No damage defined for ${kind}")
@@ -83,14 +108,6 @@ spec:
                       callback.done(false)
                   }
               }
-
-              if (gamecfg == null) {
-                  logger.warn("No game config found")
-              }
-              if (kind == null) {
-                  logger.warn("No kind found")
-              }
-
               return false
           }
 
