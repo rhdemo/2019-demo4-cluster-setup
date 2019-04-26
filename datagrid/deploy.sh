@@ -14,7 +14,7 @@ oc new-app datagrid-service \
   -p NUMBER_OF_INSTANCES=$INSTANCES \
   -p TOTAL_CONTAINER_MEM=1024 \
   -p IMAGE=$IMAGE \
-  -e JAVA_OPTS_APPEND="-XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime"
+  -e JAVA_OPTS_APPEND="-XX:NativeMemoryTracking=summary -XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime -XX:+PrintGCDateStamps -XX:+PrintGCCause -XX:+PrintAdaptiveSizePolicy -XX:+PrintPLAB -XX:+PrintGCApplicationConcurrentTime"
 oc expose svc/datagrid-service --name=console --port=console
 oc expose svc/datagrid-service --name=console-rest --path=/rest --port=http --hostname=$(oc get route console -o=go-template='{{ .spec.host }}')
 
