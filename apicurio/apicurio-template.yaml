@@ -9,7 +9,7 @@ message: |-
   
          SQL Username: ${GENERATED_DB_USER}
          SQL Password: ${GENERATED_DB_PASS}
-         SQL Connection URL: postgresql://postgresql:5432/
+         SQL Connection URL: postgresql://apicurio-postgresql:5432/
          Keycloak Username: ${KC_USER}
          Keycloak Password: ${KC_PASS}
   All Apicurio components have been deployed and configured.  Please note
@@ -96,7 +96,7 @@ objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: postgresql-data
+    name: apicurio-postgresql-data
   spec:
     accessModes:
     - ReadWriteOnce
@@ -107,9 +107,9 @@ objects:
 - kind: Secret
   apiVersion: v1
   metadata:
-    name: postgresql
+    name: apicurio-postgresql
     labels:
-      app: postgresql
+      app: apicurio-postgresql
       template: apicurio-studio
   stringData:
     database-user: "${GENERATED_DB_USER}"
@@ -129,19 +129,19 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: postgresql
+    name: apicurio-postgresql
     creationTimestamp: null
     labels:
-      app: postgresql
+      app: apicurio-postgresql
       template: apicurio-studio
   spec:
     ports:
-      - name: postgresql
+      - name: apicurio-postgresql
         protocol: TCP
         port: 5432
         targetPort: 5432
     selector:
-      name: postgresql
+      name: apicurio-postgresql
     type: ClusterIP
     sessionAffinity: None
   status:
@@ -231,10 +231,10 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: postgresql
+    name: apicurio-postgresql
     creationTimestamp: null
     labels:
-      app: postgresql
+      app: apicurio-postgresql
       template: apicurio-studio
   spec:
     strategy:
@@ -248,7 +248,7 @@ objects:
         imageChangeParams:
           automatic: true
           containerNames:
-            - postgresql
+            - apicurio-postgresql
           from:
             kind: ImageStreamTag
             name: 'postgres-db:latest'
@@ -256,19 +256,19 @@ objects:
     replicas: 1
     test: false
     selector:
-      name: postgresql
+      name: apicurio-postgresql
     template:
       metadata:
         creationTimestamp: null
         labels:
-          name: postgresql
+          name: apicurio-postgresql
       spec:
         volumes:
-          - name: postgresql-data
+          - name: apicurio-postgresql-data
             persistentVolumeClaim:
-              claimName: postgresql-data
+              claimName: apicurio-postgresql-data
         containers:
-          - name: postgresql
+          - name: apicurio-postgresql
             image: postgres-db:latest
             ports:
               - containerPort: 5432
@@ -279,12 +279,12 @@ objects:
               - name: POSTGRES_USER
                 valueFrom:
                   secretKeyRef:
-                    name: postgresql
+                    name: apicurio-postgresql
                     key: database-user
               - name: POSTGRES_PASSWORD
                 valueFrom:
                   secretKeyRef:
-                    name: postgresql
+                    name: apicurio-postgresql
                     key: database-password
               - name: POSTGRES_DB
                 value: ${DB_NAME}
@@ -292,7 +292,7 @@ objects:
               limits:
                 memory: 512Mi
             volumeMounts:
-              - name: postgresql-data
+              - name: apicurio-postgresql-data
                 mountPath: /var/lib/postgresql
             livenessProbe:
               tcpSocket:
@@ -392,18 +392,18 @@ objects:
              - name: DB_VENDOR
                value: POSTGRES
              - name: DB_ADDR
-               value: postgresql
+               value: apicurio-postgresql
              - name: DB_DATABASE
                value: ${DB_NAME}
              - name: DB_USER
                valueFrom:
                  secretKeyRef:
-                   name: postgresql
+                   name: apicurio-postgresql
                    key: database-user
              - name: DB_PASSWORD  
                valueFrom:
                  secretKeyRef:
-                   name: postgresql
+                   name: apicurio-postgresql
                    key: database-password
           resources:
             limits:
@@ -492,18 +492,18 @@ objects:
              - name: APICURIO_DB_DRIVER_NAME
                value: postgresql
              - name: APICURIO_DB_CONNECTION_URL
-               value: jdbc:postgresql://postgresql:5432/${DB_NAME}
+               value: jdbc:postgresql://apicurio-postgresql:5432/${DB_NAME}
              - name: APICURIO_DB_TYPE
                value: postgresql9
              - name: APICURIO_DB_USER_NAME
                valueFrom:
                  secretKeyRef:
-                   name: postgresql
+                   name: apicurio-postgresql
                    key: database-user
              - name: APICURIO_DB_PASSWORD
                valueFrom:
                  secretKeyRef:
-                   name: postgresql
+                   name: apicurio-postgresql
                    key: database-password
              - name: APICURIO_MIN_HEAP
                value: ${API_JVM_MIN}
@@ -592,18 +592,18 @@ objects:
              - name: APICURIO_DB_DRIVER_NAME
                value: postgresql
              - name: APICURIO_DB_CONNECTION_URL
-               value: jdbc:postgresql://postgresql:5432/${DB_NAME}
+               value: jdbc:postgresql://apicurio-postgresql:5432/${DB_NAME}
              - name: APICURIO_DB_TYPE
                value: postgresql9
              - name: APICURIO_DB_USER_NAME
                valueFrom:
                  secretKeyRef:
-                   name: postgresql
+                   name: apicurio-postgresql
                    key: database-user
              - name: APICURIO_DB_PASSWORD
                valueFrom:
                  secretKeyRef:
-                   name: postgresql
+                   name: apicurio-postgresql
                    key: database-password
              - name: APICURIO_MIN_HEAP
                value: ${WS_JVM_MIN}
@@ -1199,14 +1199,12 @@ parameters:
 - name: GENERATED_DB_USER
   displayName: PostgreSQL Connection Username
   description: Username for PostgreSQL user that will be used for accessing the database.
-  generate: expression
-  from: user[A-Z0-9]{3}
+  value: apicurio_user
   required: true
 - name: GENERATED_DB_PASS
   displayName: PostgreSQL Connection Password
   description: Password for the PostgreSQL connection user.
-  generate: expression
-  from: "[a-zA-Z0-9]{16}"
+  value: apicurio_password
   required: true
 - name: DB_NAME
   displayName: Database Name
