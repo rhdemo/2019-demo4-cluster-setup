@@ -1,0 +1,229 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: machine-history
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: machine-history
+    labels:
+      app: machine-history
+  spec:
+    tags:
+      - name: latest
+        from:
+          kind: DockerImage
+          name: quay.io/redhatdemo/machine-history:latest
+        importPolicy:
+          scheduled: true
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: machine-history-postgres
+    labels:
+      app: machine-history-postgres
+  spec:
+    tags:
+      - name: latest
+        from:
+          kind: DockerImage
+          name: quay.io/redhatdemo/machine-history-postgres:latest
+        importPolicy:
+          scheduled: true
+
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: machine-history-postgresql-data
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi          
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: machine-history
+    creationTimestamp: null
+    labels:
+      app: machine-history
+      template: machine-history
+  spec:
+    ports:
+      - name: machine-history
+        protocol: TCP
+        port: 8080
+        targetPort: 8080
+    selector:
+      app: machine-history
+    type: ClusterIP
+    sessionAffinity: None
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: machine-history-postgres-dev
+    creationTimestamp: null
+    labels:
+      app: machine-history-postgres
+      template: machine-history
+  spec:
+    ports:
+      - name: machine-history-postgres
+        protocol: TCP
+        port: 5432
+        targetPort: 5432
+    selector:
+      app: machine-history-postgres
+    type: ClusterIP
+    sessionAffinity: None
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: machine-history-postgres
+      template: machine-history
+    name: machine-history-postgres
+  spec:
+    replicas: 1
+    selector:
+      app: machine-history-postgres
+      deploymentconfig: machine-history-postgres
+    strategy:
+      type: Recreate
+      recreateParams:
+        timeoutSeconds: 60
+      resources: {}
+      activeDeadlineSeconds: 21600
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: machine-history-postgres
+          deploymentconfig: machine-history-postgres
+          template: machine-history
+      spec:
+        volumes:
+          - name: machine-history-postgresql-data
+            emptyDir: {}
+        replicas: 1
+        test: false
+        containers:
+        - image: machine-history-postgres:latest
+          imagePullPolicy: Always
+          name: machine-history-postgres
+          ports:
+          - containerPort: 5432
+            protocol: TCP
+          env:
+          - name: POSTGRES_USER
+            value: machine_history_user
+          - name: POSTGRES_PASSWORD
+            value: DSAf3DSdfhjkl39s9
+          - name: POSTGRES_DB
+            value: machine_history_dev
+          volumeMounts:
+          - name: machine-history-postgresql-data
+            mountPath: /var/lib/postgresql  
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 300m
+              memory: 200Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        terminationGracePeriodSeconds: 30
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - machine-history-postgres
+        from:
+          kind: ImageStreamTag
+          name: 'machine-history-postgres:latest'
+  status: {}    
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: machine-history
+      template: machine-history
+    name: machine-history
+  spec:
+    replicas: 1
+    selector:
+      app: machine-history
+      deploymentconfig: machine-history
+    strategy:
+      type: Recreate
+      recreateParams:
+        timeoutSeconds: 60
+      resources: {}
+      activeDeadlineSeconds: 21600
+    template:
+      metadata:
+        creationTimestamp: null
+        labels:
+          app: machine-history
+          deploymentconfig: machine-history
+          template: machine-history
+      spec:
+        replicas: 1
+        containers:
+        - image: machine-history:latest
+          imagePullPolicy: Always
+          name: machine-history
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          env:
+          - name: QUARKUS_DATASOURCE_URL
+            value: jdbc:postgresql://machine-history-postgres-dev:5432/machine_history_dev 
+          resources:
+            limits:
+              cpu: 200m
+              memory: 80Mi
+            requests:
+              cpu: 70m
+              memory: 40Mi
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        terminationGracePeriodSeconds: 30
+    triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - machine-history
+        from:
+          kind: ImageStreamTag
+          name: 'machine-history:latest'
+  status: {}
+- apiVersion: v1
+  kind: Route
+  metadata:
+    name: machine-history
+    creationTimestamp: null
+    labels:
+      app: machine-history
+      template: machine-history
+  spec:
+    host: machine-history.apps.dev.openshift.redhatkeynote.com
+    to:
+      kind: Service
+      name: machine-history
+      weight: 100
