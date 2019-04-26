@@ -12,6 +12,7 @@ oc new-app datagrid-service \
   -p APPLICATION_USER=$USER \
   -p APPLICATION_PASSWORD=$PASS \
   -p NUMBER_OF_INSTANCES=$INSTANCES \
+  -p TOTAL_CONTAINER_MEM=1024 \
   -p IMAGE=$IMAGE \
   -e JAVA_OPTS_APPEND="-XX:+PrintTenuringDistribution -XX:+PrintGCApplicationStoppedTime"
 oc expose svc/datagrid-service --name=console --port=console
