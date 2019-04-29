@@ -101,7 +101,7 @@ oc apply -f https://raw.githubusercontent.com/bbrowning/eventing-sources/kafka-d
 #
 # and copy the image values here
 KAFKA_DEMO_CONTROLLER_IMAGE="index.docker.io/bbrowning/controller-b9dd81bd360d16d6b7c6cd69487d72a5@sha256:b76e200fe2ac7aa74675201b1f7c099ab25326cf2fd654c835cfa989e42aa0da"
-KAFKA_DEMO_RA_IMAGE="index.docker.io/bbrowning/receive_adapter-a3ffe8766802b0f13e2a5cc64eceba7c@sha256:5f2a55526932044c6eeb8b847528bbd92168e04a85f250c32e062f935203ac39"
+KAFKA_DEMO_RA_IMAGE="index.docker.io/bbrowning/receive_adapter-a3ffe8766802b0f13e2a5cc64eceba7c@sha256:49de5da1d1b5f143b94ba5bae07d32908ca884ce561c9c2f6e691eb68046b63a"
 curl -L https://raw.githubusercontent.com/bbrowning/eventing-sources/kafka-demo/contrib/kafka/config/500-controller.yaml | sed -e "s|github.com/knative/eventing-sources/contrib/kafka/cmd/controller|${KAFKA_DEMO_CONTROLLER_IMAGE}|" -e "s|github.com/knative/eventing-sources/contrib/kafka/cmd/receive_adapter|${KAFKA_DEMO_RA_IMAGE}|" | oc apply -f -
 
 set +e
