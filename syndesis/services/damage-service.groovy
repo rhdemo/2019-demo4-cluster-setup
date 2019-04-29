@@ -92,6 +92,7 @@ def applyDamage = new AsyncProcessor() {
             }
 
             long tdamage = damage.doubleValue() * multipl.doubleValue() * 1_000_000_000_000_000_000
+            long starttm = System.currentTimeMillis()
 
             scount.addAndGet(-tdamage).handleAsync { v, e ->
                 exchange.message.body.damage = damage
@@ -105,6 +106,7 @@ def applyDamage = new AsyncProcessor() {
                     exchange.message.body.note = e.getMessage()
                 }
 
+                logger.info("took: {}ms",  System.currentTimeMillis() - starttm)
                 callback.done(false)
             }
         }

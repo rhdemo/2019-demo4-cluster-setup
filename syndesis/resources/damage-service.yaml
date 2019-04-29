@@ -60,7 +60,7 @@ spec:
 
       loadConfig()
 
-      from('timer:tick')
+      from('timer:tick?period=15s')
           .process{ loadConfig() }
           .log('reloaded config')
 
@@ -92,6 +92,7 @@ spec:
                   }
 
                   long tdamage = damage.doubleValue() * multipl.doubleValue() * 1_000_000_000_000_000_000
+                  long starttm = System.currentTimeMillis()
 
                   scount.addAndGet(-tdamage).handleAsync { v, e ->
                       exchange.message.body.damage = damage
@@ -106,6 +107,8 @@ spec:
                       }
 
                       callback.done(false)
+
+                      logger.info("took: {}ms",  System.currentTimeMillis() - starttm)
                   }
               }
               return false
