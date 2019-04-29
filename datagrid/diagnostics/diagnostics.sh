@@ -2,7 +2,7 @@
 
 set -e
 
-NUM_INSTANCES=10
+source ./config.sh
 
 # Quick check
 oc project
