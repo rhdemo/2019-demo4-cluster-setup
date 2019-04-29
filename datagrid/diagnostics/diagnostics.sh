@@ -2,15 +2,16 @@
 
 set -e
 
+NUM_INSTANCES=10
+
 # Quick check
 oc project
-
-declare -a PodArray=("datagrid-service-0" "datagrid-service-1" "datagrid-service-2" "datagrid-service-3")
 
 DIAGNOSTICS_DIR=$(mktemp -d -t datagrid-)
 echo "Diagnostics directory: ${DIAGNOSTICS_DIR}"
 
-for pod in ${PodArray[@]}; do
+for ((i = 0; i < ${NUM_INSTANCES}; i++)); do
+    pod="datagrid-service-${i}"
     echo "Diagnostics for: ${pod}"
 
     podDir=${DIAGNOSTICS_DIR}/${pod}
