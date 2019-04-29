@@ -1,5 +1,5 @@
 #!/bin/bash
-INSTANCES=${1:-4}
+INSTANCES=${1:-10}
 IMAGE=quay.io/redhatdemo/datagrid
 USER=admin
 PASS=admin
