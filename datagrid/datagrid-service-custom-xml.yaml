@@ -144,7 +144,7 @@ objects:
             limits:
               memory: ${TOTAL_CONTAINER_MEM}Mi
             requests:
-              cpu: "0.5"
+              cpu: "1"
               memory: ${TOTAL_CONTAINER_MEM}Mi
           volumeMounts:
           - mountPath: /opt/datagrid/standalone/configuration/user
