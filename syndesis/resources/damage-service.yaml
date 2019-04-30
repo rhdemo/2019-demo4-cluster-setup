@@ -18,7 +18,9 @@ spec:
       import org.apache.camel.AsyncCallback
       import org.apache.camel.AsyncProcessor
       import org.apache.camel.Exchange
+      import org.apache.camel.Route
       import org.apache.camel.model.dataformat.JsonLibrary
+      import org.apache.camel.support.RoutePolicySupport
       import org.apache.camel.util.AsyncProcessorHelper
       import org.infinispan.client.hotrod.RemoteCacheManager
       import org.infinispan.client.hotrod.RemoteCounterManagerFactory
@@ -37,8 +39,9 @@ spec:
               .addServer().host(cacheHost).port(cachePort)
               .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
               .clientIntelligence(ClientIntelligence.BASIC)
-              .nearCache().maxEntries(100)
               .build()
+
+      //.nearCache().maxEntries(100)
 
       cacheMgr   = new RemoteCacheManager(cacheCfg)
       counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
@@ -67,16 +70,14 @@ spec:
       def applyDamage = new AsyncProcessor() {
           @Override
           boolean process(Exchange exchange, AsyncCallback callback) {
-              String kind    = exchange.message.body.vibrationClass
-              if (kind == null) {
-                  
+              String kind = exchange.message.body.vibrationClass
+
+              if (kind == null) {                  
                   logger.warn("No kind found")
                   callback.done(true)
                   return true;
-
               } else {
-
-                  String cname   = "machine-${exchange.message.body.machineId}"
+                  def cname  = "machine-${exchange.message.body.machineId}"
                   def scount = counterMgr.getStrongCounter(cname)
 
                   Double damage  = config.get().damage."${kind}"
@@ -99,6 +100,7 @@ spec:
                       exchange.message.body.damageMultiplier = multipl
                       exchange.message.body.damageApplied = tdamage
                       exchange.message.body.counter = v
+                      exchange.message.body.duration = System.currentTimeMillis() - starttm
                       exchange.exception = e
 
                       if (e instanceof CounterOutOfBoundsException) {
@@ -107,8 +109,6 @@ spec:
                       }
 
                       callback.done(false)
-
-                      logger.info("took: {}ms",  System.currentTimeMillis() - starttm)
                   }
               }
               return false
@@ -121,13 +121,21 @@ spec:
       }
 
       from('netty4-http:0.0.0.0:8080/ApplyDamage')
+          .routePolicy(new RoutePolicySupport() {
+              @Override
+              public void onExchangeDone(Route route, Exchange exchange) {
+                logger.info('exchange duration={}, data={}',
+                    System.currentTimeMillis() - exchange.created.time,
+                    exchange.message.body
+                )
+              }
+          })
           .to('seda:applyDamage')
 
       from('seda:applyDamage?concurrentConsumers=25')
           .unmarshal().json(JsonLibrary.Jackson, Map.class)
           .log('req: ${body}')
           .process(applyDamage)
-          .log('res: ${body}')
   traits:
     affinity:
       configuration:
