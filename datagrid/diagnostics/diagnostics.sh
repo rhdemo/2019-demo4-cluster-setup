@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+#set -e
 
 source ./config.sh
 
@@ -31,4 +31,7 @@ for ((i = 0; i < ${NUM_INSTANCES}; i++)); do
     echo "Generate thread dump and copy log"
     oc exec ${pod} -- kill -3 ${pid}
     oc logs ${pod} > ${podDir}/${pod}.log
+
+    echo "Generate native memory diff"
+    oc exec ${pod} -- jcmd ${pid} VM.native_memory summary.diff > ${podDir}/native-memory-diff-${i}.log
 done
