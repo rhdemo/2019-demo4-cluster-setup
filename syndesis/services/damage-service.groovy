@@ -36,7 +36,6 @@ cachePort  = 11222
 cacheCfg   = new ConfigurationBuilder()
         .addServer().host(cacheHost).port(cachePort)
         .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
-        .clientIntelligence(ClientIntelligence.BASIC)
         .nearCache().maxEntries(100)
         .build()
 

@@ -38,7 +38,6 @@ spec:
       cacheCfg   = new ConfigurationBuilder()
               .addServer().host(cacheHost).port(cachePort)
               .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
-              .clientIntelligence(ClientIntelligence.BASIC)
               .build()
 
       //.nearCache().maxEntries(100)
