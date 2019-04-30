@@ -2,17 +2,14 @@ apiVersion: v1
 kind: Template
 
 labels:
-  application: demo4-admin-server
+  application: demo4-leaderboard-background
 
 metadata:
-  name: demo4-admin-server
+  name: demo4-leaderboard-background
 
 parameters:
   - name: APPLICATION_NAME
-    value: demo4-admin-server
-    required: true
-  - name: REPLICAS
-    value: "1"
+    value: demo4-leaderboard-background
     required: true
   - name: PORT
     value: "8080"
@@ -21,22 +18,13 @@ parameters:
     value: "0.0.0.0"
     required: true
   - name: IMAGE_REPOSITORY
-    value: quay.io/redhatdemo/demo4-admin-server:latest
-    required: true
-  - name: OPTAPLANNER_URL
-    value: http://optaplanner-demo.optaplanner-demo.svc.cluster.local:8080
+    value: quay.io/redhatdemo/demo4-leaderboard-background:latest
     required: true
   - name: DATAGRID_HOST
     value: datagrid-service.datagrid-demo.svc.cluster.local
     required: true
   - name: DATAGRID_HOTROD_PORT
     value: "11222"
-    required: true
-  - name: DATAGRID_CONSOLE_PORT
-    value: "9990"
-    required: true
-  - name: DATAGRID_CONSOLE_REST_PORT
-    value: "8080"
     required: true
   - name: CONTAINER_REQUEST_CPU
     value: 200m
@@ -56,9 +44,6 @@ objects:
     stringData:
       DATAGRID_HOST: ${DATAGRID_HOST}
       DATAGRID_HOTROD_PORT: ${DATAGRID_HOTROD_PORT}
-      DATAGRID_CONSOLE_PORT: ${DATAGRID_CONSOLE_PORT}
-      DATAGRID_CONSOLE_REST_PORT: ${DATAGRID_CONSOLE_REST_PORT}
-      OPTAPLANNER_URL: ${OPTAPLANNER_URL}
 
   - apiVersion: v1
     kind: DeploymentConfig
@@ -67,11 +52,11 @@ objects:
       labels:
         app: ${APPLICATION_NAME}
     spec:
-      replicas: ${REPLICAS}
+      replicas: 1
       selector:
         deploymentconfig: ${APPLICATION_NAME}
       strategy:
-        type: Rolling
+        type: Recreate
       template:
         metadata:
           labels:

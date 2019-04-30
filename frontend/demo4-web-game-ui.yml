@@ -19,9 +19,9 @@ parameters:
   - name: CERTIFICATE
   - name: CA_CERTIFICATE
   - name: CONTAINER_REQUEST_CPU
-    value: 500m
+    value: 200m
   - name: CONTAINER_REQUEST_MEMORY
-    value: 1Gi
+    value: 250Mi
   - name: CONTAINER_LIMIT_CPU
     value: "1"
   - name: CONTAINER_LIMIT_MEMORY
