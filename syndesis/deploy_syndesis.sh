@@ -114,7 +114,7 @@ wait_for "Starting" oc get syndesis default -n $TARGET_PROJECT -o=jsonpath="{.st
 # Patch syndesis backend configuration
 # 
 bash $dir/deploy_syndesis_ui_config.sh ${TARGET_PROJECT}
-bash $dir/deploy_syndesis_seerver_config.sh ${TARGET_PROJECT}
+bash $dir/deploy_syndesis_server_config.sh ${TARGET_PROJECT}
 
 #
 # Pickup some bug fixes by patching the image streams.
