@@ -17,36 +17,34 @@ oc rollout status deployment/prometheus -w -n $NAMESPACE
 oc rollout status deployment/alertmanager -w -n $NAMESPACE
 echo "...Prometheus server ready"
 
-# Grafana
-oc apply -f $DIR/monitoring/grafana.yaml -n $NAMESPACE
-oc expose service/grafana -n $NAMESPACE
+# Preparing Grafana datasource and dashboards
 
-echo "Waiting for Grafana server to be ready..."
-oc rollout status deployment/grafana -w -n $NAMESPACE
-echo "...Grafana server ready"
-sleep 2
-
-# get Grafana route host for subsequent cURL calls for POSTing datasource and dashboards
-GRAFANA_HOST_ROUTE=$(oc get routes grafana -o=jsonpath='{.status.ingress[0].host}{"\n"}' -n $NAMESPACE)
-
-# POST Prometheus datasource configuration to Grafana
-curl -X POST http://admin:admin@${GRAFANA_HOST_ROUTE}/api/datasources -d @$DIR/monitoring/dashboards/datasource.json --header "Content-Type: application/json"
-
-# build and POST the Kafka dashboard to Grafana
-$DIR/monitoring/dashboards/dashboard-template.sh $DIR/monitoring/dashboards/strimzi-kafka.json > $DIR/monitoring/dashboards/strimzi-kafka-dashboard.json
+# build the Kafka dashboard
+cp $DIR/monitoring/dashboards/strimzi-kafka.json $DIR/monitoring/dashboards/strimzi-kafka-dashboard.json
 
 sed -i 's/${DS_PROMETHEUS}/Prometheus/' $DIR/monitoring/dashboards/strimzi-kafka-dashboard.json
 sed -i 's/DS_PROMETHEUS/Prometheus/' $DIR/monitoring/dashboards/strimzi-kafka-dashboard.json
 
-curl -X POST http://admin:admin@${GRAFANA_HOST_ROUTE}/api/dashboards/db -d @$DIR/monitoring/dashboards/strimzi-kafka-dashboard.json --header "Content-Type: application/json"
-
 # build and POST the Zookeeper dashboard to Grafana
-$DIR//monitoring/dashboards/dashboard-template.sh $DIR/monitoring/dashboards/strimzi-zookeeper.json > $DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json
+cp $DIR/monitoring/dashboards/strimzi-zookeeper.json $DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json
 
 sed -i 's/${DS_PROMETHEUS}/Prometheus/' $DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json
 sed -i 's/DS_PROMETHEUS/Prometheus/' $DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json
 
-curl -X POST http://admin:admin@${GRAFANA_HOST_ROUTE}/api/dashboards/db -d @$DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json --header "Content-Type: application/json"
+oc create configmap grafana-config \
+    --from-file=datasource.yaml=$DIR/monitoring/dashboards/datasource.yaml \
+    --from-file=grafana-dashboard-provider.yaml=$DIR/monitoring/grafana-dashboard-provider.yaml \
+    --from-file=strimzi-kafka-dashboard.json=$DIR/monitoring/dashboards/strimzi-kafka-dashboard.json \
+    --from-file=strimzi-zookeeper-dashboard.json=$DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json \
+    -n $NAMESPACE
 
 rm $DIR/monitoring/dashboards/strimzi-kafka-dashboard.json
 rm $DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json
+
+# Grafana
+oc apply -f $DIR/monitoring/grafana.yaml -n $NAMESPACE
+oc expose service/grafana -n $NAMESPACE
+
+#echo "Waiting for Grafana server to be ready..."
+oc rollout status deployment/grafana -w -n $NAMESPACE
+echo "...Grafana server ready"
