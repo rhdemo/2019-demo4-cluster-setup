@@ -44,7 +44,7 @@ else
     [[ -z "$S3_ACCESS_KEY_ID" ]] && { echo "S3_ACCESS_KEY_ID is missing. No training data will be written" ;}
     [[ -z "$S3_SECRET_ACCESS_KEY" ]] && { echo "S3_SECRET_ACCESS_KEY is missing. No training data will be written" ;}
     GESTURE_PARAMS='-p REPLICAS=2'
-    GAME_SERVER_PARAMS='-p REPLICAS=10'
+    GAME_SERVER_PARAMS='-p REPLICAS=20'
     GAME_UI_PARAMS='-p REPLICAS=5'
     ADMIN_SERVER_PARAMS='-p REPLICAS=2'
     ADMIN_UI_PARAMS='-p REPLICAS=2'
