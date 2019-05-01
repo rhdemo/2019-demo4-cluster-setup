@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi}
-CLUSTER=${STRIMZI_CLUSTER:-my-cluster}
+NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
+CLUSTER=${STRIMZI_CLUSTER:-demo2019}
 
 echo "Scaling down entity operator to 0..."
 oc scale deployment $CLUSTER-entity-operator --replicas=0 -n $NAMESPACE

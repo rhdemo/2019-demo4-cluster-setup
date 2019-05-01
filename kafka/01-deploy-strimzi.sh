@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi}
+NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 function check_openshift_4 {
