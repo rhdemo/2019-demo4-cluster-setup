@@ -13,10 +13,10 @@ echo "DEPLOYING KAFKA CLUSTER WITH STRIMZI ..."
 # cluster deployment
 $DIR/01-deploy-strimzi.sh
 $DIR/02-deploy-kafka.sh
-$DIR/03-deploy-topics.sh
-$DIR/04-deploy-console-server.sh
-$DIR/05-deploy-console.sh
-$DIR/06-deploy-monitoring.sh
+$DIR/03-deploy-console-server.sh
+$DIR/04-deploy-console.sh
+$DIR/05-deploy-monitoring.sh
+$DIR/06-deploy-topics.sh
 
 echo ""
 echo "... KAFKA CLUSTER DEPLOYED!"
