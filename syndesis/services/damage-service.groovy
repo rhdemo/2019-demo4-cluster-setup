@@ -14,11 +14,12 @@ kamel run \
     --dev \
     services/damage-service.groovy
 */
-
 import org.apache.camel.AsyncCallback
 import org.apache.camel.AsyncProcessor
 import org.apache.camel.Exchange
+import org.apache.camel.Route
 import org.apache.camel.model.dataformat.JsonLibrary
+import org.apache.camel.support.RoutePolicySupport
 import org.apache.camel.util.AsyncProcessorHelper
 import org.infinispan.client.hotrod.RemoteCacheManager
 import org.infinispan.client.hotrod.RemoteCounterManagerFactory
@@ -33,12 +34,7 @@ logger     = org.slf4j.LoggerFactory.getLogger("damage-service")
 mapper     = new com.fasterxml.jackson.databind.ObjectMapper()
 cacheHost  = 'datagrid-service.datagrid-demo.svc.cluster.local'
 cachePort  = 11222
-cacheCfg   = new ConfigurationBuilder()
-        .addServer().host(cacheHost).port(cachePort)
-        .marshaller(new StringMarshaller(StandardCharsets.UTF_8))
-        .nearCache().maxEntries(100)
-        .build()
-
+cacheCfg   = new ConfigurationBuilder().addServer().host(cacheHost).port(cachePort).marshaller(new StringMarshaller(StandardCharsets.UTF_8)).clientIntelligence(ClientIntelligence.BASIC).build()
 cacheMgr   = new RemoteCacheManager(cacheCfg)
 counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
 
@@ -59,23 +55,21 @@ def loadConfig() {
 
 loadConfig()
 
-from('timer:tick')
+from('timer:tick?period=15s')
     .process{ loadConfig() }
     .log('reloaded config')
 
 def applyDamage = new AsyncProcessor() {
     @Override
     boolean process(Exchange exchange, AsyncCallback callback) {
-        String kind    = exchange.message.body.vibrationClass
-        if (kind == null) {
-            
+        String kind = exchange.message.body.vibrationClass
+
+        if (kind == null) {                  
             logger.warn("No kind found")
             callback.done(true)
             return true;
-
         } else {
-
-            String cname   = "machine-${exchange.message.body.machineId}"
+            def cname  = "machine-${exchange.message.body.machineId}"
             def scount = counterMgr.getStrongCounter(cname)
 
             Double damage  = config.get().damage."${kind}"
@@ -98,6 +92,7 @@ def applyDamage = new AsyncProcessor() {
                 exchange.message.body.damageMultiplier = multipl
                 exchange.message.body.damageApplied = tdamage
                 exchange.message.body.counter = v
+                exchange.message.body.duration = System.currentTimeMillis() - starttm
                 exchange.exception = e
 
                 if (e instanceof CounterOutOfBoundsException) {
@@ -105,7 +100,6 @@ def applyDamage = new AsyncProcessor() {
                     exchange.message.body.note = e.getMessage()
                 }
 
-                logger.info("took: {}ms",  System.currentTimeMillis() - starttm)
                 callback.done(false)
             }
         }
@@ -119,10 +113,15 @@ def applyDamage = new AsyncProcessor() {
 }
 
 from('netty4-http:0.0.0.0:8080/ApplyDamage')
-    .to('seda:applyDamage')
-
-from('seda:applyDamage?concurrentConsumers=25')
+    .routePolicy(new RoutePolicySupport() {
+        @Override
+        public void onExchangeDone(Route route, Exchange exchange) {
+        logger.info('exchange duration={}, data={}',
+            System.currentTimeMillis() - exchange.created.time,
+            exchange.message.body
+        )
+        }
+    })
     .unmarshal().json(JsonLibrary.Jackson, Map.class)
     .log('req: ${body}')
     .process(applyDamage)
-    .log('res: ${body}')
