@@ -38,6 +38,8 @@ oc create configmap grafana-config \
     --from-file=strimzi-zookeeper-dashboard.json=$DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json \
     -n $NAMESPACE
 
+oc label configmap grafana-config app=strimzi
+
 rm $DIR/monitoring/dashboards/strimzi-kafka-dashboard.json
 rm $DIR/monitoring/dashboards/strimzi-zookeeper-dashboard.json
 
