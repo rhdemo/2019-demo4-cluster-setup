@@ -108,6 +108,22 @@ set +e
 
 wait_for_all_pods knative-sources
 
+# add HPA for istio-ingressgateway
+cat <<EOF | oc apply -f -
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: istio-ingressgateway
+  namespace: istio-system
+spec:
+  maxReplicas: 10
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: istio-ingressgateway
+  targetCPUUtilizationPercentage: 50
+EOF
 
 # show all the running pods
 oc get pods --all-namespaces
