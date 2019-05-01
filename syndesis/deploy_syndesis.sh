@@ -122,3 +122,9 @@ bash $dir/deploy_syndesis_server_config.sh ${TARGET_PROJECT}
 loop oc patch -n ${TARGET_PROJECT} is syndesis-server --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-server:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is syndesis-meta --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/redhatdemo/syndesis-meta:latest"}]'
 loop oc patch -n ${TARGET_PROJECT} is oauth-proxy --type='json' -p='[{"op": "replace", "path": "/spec/tags/0/from/name", "value":"quay.io/openshift/origin-oauth-proxy:latest"}]'
+
+#
+# Patch backend memory requirements.
+#
+loop oc patch -n ${TARGET_PROJECT} dc syndesis-server --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/resources", "value": {"requests": {"memory": "256Mi", "cpu": "450m"}, "limits": {"memory": "2Gi", "cpu": "750m"}}}]' 
+loop oc patch -n ${TARGET_PROJECT} dc syndesis-oauthproxy --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/resources", "value": {"requests": {"memory": "20Mi"}, "limits": {"memory": "512Mi"}}}]' 
