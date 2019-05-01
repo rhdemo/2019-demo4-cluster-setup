@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi}
+NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
 
 function check_openshift_4 {
   if oc api-resources >/dev/null; then

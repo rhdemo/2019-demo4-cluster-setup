@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi}
+NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
 
 echo "Scaling down strimzi-console-server to 0..."
 oc scale deployment strimzi-console-server --replicas=0 -n $NAMESPACE

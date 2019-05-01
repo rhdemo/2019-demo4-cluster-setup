@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi}
-CLUSTER=${STRIMZI_CLUSTER:-my-cluster}
+NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
+CLUSTER=${STRIMZI_CLUSTER:-demo2019}
 
 # delete Kafka topics
 oc delete kafkatopic sensorstream-ai -n $NAMESPACE
