@@ -25,7 +25,7 @@ oc get configmap syndesis-server-config -o yaml \
 
 cat /tmp/syndesis-server-config.yml \
     | yq r - 'data[application.yml]' \
-    | yq w - controllers.dblogging.enable false \
+    | yq w - controllers.dblogging.enabled false \
     | yq w - controllers.integration camel-k \
     | yq w - controllers.camelk.environment.DATAGRID_SERVICE_HOST datagrid-service.datagrid-demo.svc.cluster.local \
     | yq w - controllers.camelk.environment.DATAGRID_SERVICE_PORT 11222 \
