@@ -24,3 +24,6 @@ while [ "$(oc get statefulset datagrid-service -o jsonpath='{.status.readyReplic
     sleep 5
 done
 oc exec datagrid-service-0 -- curl -X POST -d @/opt/datagrid/standalone/configuration/game-config.json -H application/json http://datagrid-service.datagrid-demo.svc.cluster.local:8080/rest/game/game
+
+# Set a native memory baseline
+./diagnostics/native-baseline.sh
