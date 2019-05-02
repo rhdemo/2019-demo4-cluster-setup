@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
-CLUSTER=${STRIMZI_CLUSTER:-demo2019}
+NAMESPACE=${KAFKA_NAMESPACE:-strimzi-demo}
+CLUSTER=${KAFKA_CLUSTER:-demo2019}
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 sed "s/my-cluster/$CLUSTER/" $DIR/cluster/kafka-topics.yaml > $DIR/cluster/$CLUSTER-kafka-topics.yaml

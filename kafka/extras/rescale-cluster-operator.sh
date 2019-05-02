@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
+NAMESPACE=${KAFKA_NAMESPACE:-strimzi-demo}
 
 echo "Scaling down cluster operator to 0..."
 oc scale deployment strimzi-cluster-operator --replicas=0 -n $NAMESPACE

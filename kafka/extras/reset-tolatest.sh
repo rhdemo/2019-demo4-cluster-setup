@@ -5,8 +5,8 @@
 # usage:
 # reset-tolatest.sh <consumer-group> <topic>
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
-CLUSTER=${STRIMZI_CLUSTER:-demo2019}
+NAMESPACE=${KAFKA_NAMESPACE:-strimzi-demo}
+CLUSTER=${KAFKA_CLUSTER:-demo2019}
 
 CONSUMER_GROUP=$1
 TOPIC=$2
