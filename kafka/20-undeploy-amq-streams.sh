@@ -12,10 +12,10 @@ function check_openshift_4 {
 
 if check_openshift_4; then
     # uninstall operator
-    oc delete subscriptions.operators.coreos.com strimzi-kafka-operator -n $NAMESPACE
-    oc delete clusterserviceversion strimzi-cluster-operator.v0.11.1 -n $NAMESPACE
-    oc delete catalogsourceconfig installed-community-$NAMESPACE -n openshift-marketplace
-    oc delete operatorgroup strimzi-kafka-operator -n $NAMESPACE
+    oc delete subscriptions.operators.coreos.com amq-streams -n $NAMESPACE
+    oc delete clusterserviceversion amqstreams.v1.1.0 -n $NAMESPACE
+    oc delete catalogsourceconfig redhat-operators-$NAMESPACE -n openshift-marketplace
+    oc delete operatorgroup amq-streams -n $NAMESPACE
 fi
 
 # deleting "all" Strimzi resources

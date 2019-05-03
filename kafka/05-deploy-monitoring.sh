@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
+NAMESPACE=${KAFKA_NAMESPACE:-strimzi-demo}
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 # Prometheus

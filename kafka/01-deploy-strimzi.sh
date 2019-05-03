@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAMESPACE=${STRIMZI_NAMESPACE:-strimzi-demo}
+NAMESPACE=${KAFKA_NAMESPACE:-strimzi-demo}
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 function check_openshift_4 {
@@ -31,17 +31,17 @@ else
     echo "OpenShift older than 4 - Installing Strimzi via release"
 
     # download Strimzi release
-    wget https://github.com/strimzi/strimzi-kafka-operator/releases/download/$STRIMZI_VERSION/strimzi-$STRIMZI_VERSION.tar.gz
-    mkdir $DIR/strimzi-$STRIMZI_VERSION
-    tar xzf strimzi-$STRIMZI_VERSION.tar.gz -C $DIR/strimzi-$STRIMZI_VERSION --strip 1
-    rm strimzi-$STRIMZI_VERSION.tar.gz
+    wget https://github.com/strimzi/strimzi-kafka-operator/releases/download/$KAFKA_OPERATOR_VERSION/strimzi-$KAFKA_OPERATOR_VERSION.tar.gz
+    mkdir $DIR/strimzi-$KAFKA_OPERATOR_VERSION
+    tar xzf strimzi-$KAFKA_OPERATOR_VERSION.tar.gz -C $DIR/strimzi-$KAFKA_OPERATOR_VERSION --strip 1
+    rm strimzi-$KAFKA_OPERATOR_VERSION.tar.gz
 
-    sed -i "s/namespace: .*/namespace: $NAMESPACE/" $DIR/strimzi-$STRIMZI_VERSION/install/cluster-operator/*RoleBinding*.yaml
+    sed -i "s/namespace: .*/namespace: $NAMESPACE/" $DIR/strimzi-$KAFKA_OPERATOR_VERSION/install/cluster-operator/*RoleBinding*.yaml
 
-    oc apply -f $DIR/strimzi-$STRIMZI_VERSION/install/cluster-operator -n $NAMESPACE
-    oc apply -f $DIR/strimzi-$STRIMZI_VERSION/install/strimzi-admin -n $NAMESPACE
+    oc apply -f $DIR/strimzi-$KAFKA_OPERATOR_VERSION/install/cluster-operator -n $NAMESPACE
+    oc apply -f $DIR/strimzi-$KAFKA_OPERATOR_VERSION/install/strimzi-admin -n $NAMESPACE
 
-    rm -rf $DIR/strimzi-$STRIMZI_VERSION
+    rm -rf $DIR/strimzi-$KAFKA_OPERATOR_VERSION
 fi
 
 echo "Waiting for cluster operator to be ready..."
