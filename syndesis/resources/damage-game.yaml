@@ -16,6 +16,7 @@ spec:
       import org.apache.camel.AsyncCallback
       import org.apache.camel.AsyncProcessor
       import org.apache.camel.Exchange
+      import org.apache.camel.Processor
       import org.apache.camel.Route
       import org.apache.camel.model.dataformat.JsonLibrary
       import org.apache.camel.support.RoutePolicySupport
@@ -111,6 +112,46 @@ spec:
           }
       }
 
+      def applyDamageSync = {
+          String kind = it.message.body.vibrationClass
+
+          if (kind == null) {                  
+              logger.warn("No kind found")
+          } else {
+              def cname  = "machine-${it.message.body.machineId}"
+              def scount = counterMgr.getStrongCounter(cname)
+
+              Double damage  = config.get().damage."${kind}"
+              Double multipl = config.get().damageMultiplier
+
+              if (damage == null) {
+                  logger.warn("No damage defined for ${kind}")
+                  return
+              }
+              if (multipl == null) {
+                  logger.warn("No damage multiplier defined for ${kind}")
+                  return
+              }
+
+              long tdamage = damage.doubleValue() * multipl.doubleValue() * 1_000_000_000_000_000_000
+              long starttm = System.currentTimeMillis()
+
+              scount.addAndGet(-tdamage).handleAsync { v, e ->
+                  it.message.body.damage = damage
+                  it.message.body.damageMultiplier = multipl
+                  it.message.body.damageApplied = tdamage
+                  it.message.body.counter = v
+                  it.message.body.duration = System.currentTimeMillis() - starttm
+                  it.exception = e
+
+                  if (e instanceof CounterOutOfBoundsException) {
+                      it.exception = null
+                      it.message.body.note = e.getMessage()
+                  }
+              }.get()
+          }
+      }
+
       from('netty4-http:0.0.0.0:8080')
           .routePolicy(new RoutePolicySupport() {
               @Override
@@ -124,7 +165,7 @@ spec:
           })
           .unmarshal().json(JsonLibrary.Jackson, Map.class)
           .log('req: ${body}')
-          .process(applyDamage)
+          .process(applyDamageSync as Processor)
   traits:
     gc:
       configuration:
