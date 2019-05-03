@@ -3,7 +3,6 @@ kind: Integration
 metadata:
   name: damage-game
 spec:
-  replicas: 25
   dependencies:
   - camel:netty4-http
   - camel:jackson
@@ -139,8 +138,12 @@ spec:
     knative-service:
       configuration:
         enabled: "true"
-        min-scale: "25"
-        max-scale: "25"
+        min-scale: "50"
+        max-scale: "50"
+    container:
+      configuration:
+        limit-memory: 512Mi
+        request-cpu: 75m
   configuration:
   - type: property
     value: camel.context.messageHistory=false
