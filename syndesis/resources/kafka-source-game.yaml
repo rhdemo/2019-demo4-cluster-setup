@@ -1,0 +1,16 @@
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: KafkaSource
+metadata:
+  name: sensorstream-source-game
+spec:
+  consumerGroup: syndesis-game
+  bootstrapServers: demo2019-kafka-bootstrap.strimzi-demo.svc.cluster.local:9092
+  topics: sensorstream-ai
+  net:
+    tls:
+      enable: false
+  sink:
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Service
+    name: damage-game
+
