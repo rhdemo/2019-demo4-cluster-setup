@@ -4,7 +4,7 @@ metadata:
   name: my-cluster
 spec:
   kafka:
-    version: 2.1.0
+    version: my-kafka-version
     replicas: 3
     listeners:
       plain: {}

@@ -2,9 +2,11 @@
 
 NAMESPACE=${KAFKA_NAMESPACE:-strimzi-demo}
 CLUSTER=${KAFKA_CLUSTER:-demo2019}
+VERSION=${KAFKA_VERSION:-2.1.0}
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
 sed "s/my-cluster/$CLUSTER/" $DIR/cluster/kafka-persistent-with-metrics.yaml > $DIR/cluster/$CLUSTER-kafka-persistent-with-metrics.yaml
+sed -i "s/my-kafka-version/$VERSION/" $DIR/cluster/$CLUSTER-kafka-persistent-with-metrics.yaml
 
 oc apply -f $DIR/cluster/$CLUSTER-kafka-persistent-with-metrics.yaml -n $NAMESPACE
 
