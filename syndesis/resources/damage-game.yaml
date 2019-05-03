@@ -111,12 +111,13 @@ spec:
           }
       }
 
-      from('knative:endpoint/game')
+      from('netty4-http:0.0.0.0:8080')
           .routePolicy(new RoutePolicySupport() {
               @Override
               public void onExchangeDone(Route route, Exchange exchange) {
-                logger.info('exchange duration={}, data={}',
+                logger.info('exchange duration={}, failed={}, data={}',
                     System.currentTimeMillis() - exchange.created.time,
+                    exchange.exception != null,
                     exchange.message.body
                 )
               }
@@ -138,8 +139,8 @@ spec:
     knative-service:
       configuration:
         enabled: "true"
-        min-scale: "50"
-        max-scale: "50"
+        min-scale: "25"
+        max-scale: "25"
     container:
       configuration:
         limit-memory: 512Mi
@@ -149,3 +150,5 @@ spec:
     value: camel.context.messageHistory=false
   - type: property
     value: camel.context.allowUseOriginalMessage=false
+  - type: property
+    value: camel.component.netty4-http.maximumPoolSize=16
