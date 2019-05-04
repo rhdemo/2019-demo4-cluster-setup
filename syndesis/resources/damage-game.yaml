@@ -4,12 +4,11 @@ metadata:
   name: damage-game
 spec:
   dependencies:
-  - camel:netty4-http
   - camel:jackson
+  - camel:undertow
   - mvn:org.infinispan/infinispan-client-hotrod/9.4.12.Final
   - mvn:org.infinispan/infinispan-query-dsl/9.4.12.Final
   - mvn:org.infinispan/infinispan-commons/9.4.12.Final
-  - mvn:org.apache.camel.k/camel-knative
   sources:
   - name: damage-game.groovy
     content: |-      
@@ -21,6 +20,7 @@ spec:
       import org.apache.camel.model.dataformat.JsonLibrary
       import org.apache.camel.support.RoutePolicySupport
       import org.apache.camel.util.AsyncProcessorHelper
+      import org.apache.camel.component.undertow.UndertowHostOptions
       import org.infinispan.client.hotrod.RemoteCacheManager
       import org.infinispan.client.hotrod.RemoteCounterManagerFactory
       import org.infinispan.client.hotrod.configuration.ClientIntelligence
@@ -38,8 +38,25 @@ spec:
       cacheCfg   = new ConfigurationBuilder().addServer().host(cacheHost).port(cachePort).marshaller(new StringMarshaller(StandardCharsets.UTF_8)).build()
       cacheMgr   = new RemoteCacheManager(cacheCfg)
       counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
-
+  
       // .clientIntelligence(ClientIntelligence.BASIC)
+
+      //
+      // Configure undertow threading
+      //
+      def hostop = new UndertowHostOptions()
+      hostop.ioThreads = 2
+      hostop.workerThreads = 10
+
+      context {
+          components {
+              undertow {
+                  hostOptions = hostop
+              }
+          }
+      }
+
+      
       //
       // Read the game config, and continue reloading it.
       //
@@ -61,60 +78,7 @@ spec:
           .process{ loadConfig() }
           .log('reloaded config')
 
-      def applyDamage = new AsyncProcessor() {
-          @Override
-          boolean process(Exchange exchange, AsyncCallback callback) {
-              String kind = exchange.message.body.vibrationClass
-
-              if (kind == null) {                  
-                  logger.warn("No kind found")
-                  callback.done(true)
-                  return true;
-              } else {
-                  def cname  = "machine-${exchange.message.body.machineId}"
-                  def scount = counterMgr.getStrongCounter(cname)
-
-                  Double damage  = config.get().damage."${kind}"
-                  Double multipl = config.get().damageMultiplier
-
-                  if (damage == null) {
-                      logger.warn("No damage defined for ${kind}")
-                      return
-                  }
-                  if (multipl == null) {
-                      logger.warn("No damage multiplier defined for ${kind}")
-                      return
-                  }
-
-                  long tdamage = damage.doubleValue() * multipl.doubleValue() * 1_000_000_000_000_000_000
-                  long starttm = System.currentTimeMillis()
-
-                  scount.addAndGet(-tdamage).handleAsync { v, e ->
-                      exchange.message.body.damage = damage
-                      exchange.message.body.damageMultiplier = multipl
-                      exchange.message.body.damageApplied = tdamage
-                      exchange.message.body.counter = v
-                      exchange.message.body.duration = System.currentTimeMillis() - starttm
-                      exchange.exception = e
-
-                      if (e instanceof CounterOutOfBoundsException) {
-                          exchange.exception = null
-                          exchange.message.body.note = e.getMessage()
-                      }
-
-                      callback.done(false)
-                  }
-              }
-              return false
-          }
-
-          @Override
-          void process(Exchange exchange) throws Exception {
-              AsyncProcessorHelper.process(this, exchange)
-          }
-      }
-
-      def applyDamageSync = {
+      def applyDamage = {
           String kind = it.message.body.vibrationClass
 
           if (kind == null) {                  
@@ -159,7 +123,7 @@ spec:
           }
       }
 
-      from('netty4-http:0.0.0.0:8080')
+      from('undertow:http://0.0.0.0:8080')
           .routePolicy(new RoutePolicySupport() {
               @Override
               public void onExchangeDone(Route route, Exchange exchange) {
@@ -172,7 +136,7 @@ spec:
           })
           .unmarshal().json(JsonLibrary.Jackson, Map.class)
           .log('req: ${body}')
-          .process(applyDamageSync as Processor)
+          .process(applyDamage as Processor)
   traits:
     gc:
       configuration:
@@ -198,5 +162,3 @@ spec:
     value: camel.context.messageHistory=false
   - type: property
     value: camel.context.allowUseOriginalMessage=false
-  - type: property
-    value: camel.component.netty4-http.maximumPoolSize=16
