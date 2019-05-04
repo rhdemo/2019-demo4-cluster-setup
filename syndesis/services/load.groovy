@@ -14,7 +14,7 @@ from('timer:inject?period={{timer.period:1s}}')
         long counter   = it.properties.get(org.apache.camel.Exchange.TIMER_COUNTER, long.class)
         long machineId = counter % 10
 
-        it.message.body = """{ \"machineId\": ${machineId}, \"vibrationClass\": \"x\" } """ as String
+        it.message.body = """{ \"machineId\": ${machineId}, \"vibrationClass\": \"shake\" } """ as String
     }
     .to('seda:send?waitForTaskToComplete=Never')
 from('seda:send?concurrentConsumers={{seda.consumers:25}}')

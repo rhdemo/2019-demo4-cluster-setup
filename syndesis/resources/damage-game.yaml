@@ -28,16 +28,18 @@ spec:
       import org.infinispan.commons.marshall.StringMarshaller
       import org.infinispan.counter.exception.CounterOutOfBoundsException
       import java.nio.charset.StandardCharsets
+      import java.util.concurrent.ExecutionException
       import java.util.concurrent.atomic.AtomicReference
 
       logger     = org.slf4j.LoggerFactory.getLogger("damage-game")
       mapper     = new com.fasterxml.jackson.databind.ObjectMapper()
       cacheHost  = 'datagrid-service.datagrid-demo.svc.cluster.local'
       cachePort  = 11222
-      cacheCfg   = new ConfigurationBuilder().addServer().host(cacheHost).port(cachePort).marshaller(new StringMarshaller(StandardCharsets.UTF_8)).clientIntelligence(ClientIntelligence.BASIC).build()
+      cacheCfg   = new ConfigurationBuilder().addServer().host(cacheHost).port(cachePort).marshaller(new StringMarshaller(StandardCharsets.UTF_8)).build()
       cacheMgr   = new RemoteCacheManager(cacheCfg)
       counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
 
+      // .clientIntelligence(ClientIntelligence.BASIC)
       //
       // Read the game config, and continue reloading it.
       //
@@ -117,38 +119,43 @@ spec:
 
           if (kind == null) {                  
               logger.warn("No kind found")
-          } else {
-              def cname  = "machine-${it.message.body.machineId}"
-              def scount = counterMgr.getStrongCounter(cname)
+              return
+          } 
 
-              Double damage  = config.get().damage."${kind}"
-              Double multipl = config.get().damageMultiplier
+          def    cname   = "machine-${it.message.body.machineId}"
+          def    scount  = counterMgr.getStrongCounter(cname)
+          Double damage  = config.get().damage."${kind}"
+          Double multipl = config.get().damageMultiplier
 
-              if (damage == null) {
-                  logger.warn("No damage defined for ${kind}")
-                  return
+          if (damage == null) {
+              logger.warn("No damage defined for ${kind}")
+              return
+          }
+          if (multipl == null) {
+              logger.warn("No damage multiplier defined for ${kind}")
+              return
+          }
+
+          long tdamage = damage.doubleValue() * multipl.doubleValue() * 1_000_000_000_000_000_000
+          long starttm = System.currentTimeMillis()
+
+          try {
+              it.message.body.counter = scount.addAndGet(-tdamage).get()
+          } catch (ExecutionException e) {
+              it.message.body.note = e.getMessage()
+              it.exception = e
+
+              if (e.cause instanceof CounterOutOfBoundsException) {
+                  it.exception = null
               }
-              if (multipl == null) {
-                  logger.warn("No damage multiplier defined for ${kind}")
-                  return
-              }
-
-              long tdamage = damage.doubleValue() * multipl.doubleValue() * 1_000_000_000_000_000_000
-              long starttm = System.currentTimeMillis()
-
-              scount.addAndGet(-tdamage).handleAsync { v, e ->
-                  it.message.body.damage = damage
-                  it.message.body.damageMultiplier = multipl
-                  it.message.body.damageApplied = tdamage
-                  it.message.body.counter = v
-                  it.message.body.duration = System.currentTimeMillis() - starttm
-                  it.exception = e
-
-                  if (e instanceof CounterOutOfBoundsException) {
-                      it.exception = null
-                      it.message.body.note = e.getMessage()
-                  }
-              }.get()
+          } catch (Exception e) {
+              it.message.body.note = e.getMessage()
+              it.exception = e
+          } finally {
+              it.message.body.damage = damage
+              it.message.body.damageMultiplier = multipl
+              it.message.body.damageApplied = tdamage
+              it.message.body.duration = System.currentTimeMillis() - starttm
           }
       }
 
@@ -180,8 +187,8 @@ spec:
     knative-service:
       configuration:
         enabled: "true"
-        min-scale: "25"
-        max-scale: "25"
+        min-scale: "50"
+        max-scale: "50"
     container:
       configuration:
         limit-memory: 512Mi
