@@ -130,13 +130,14 @@ spec:
                 logger.info('exchange duration={}, failed={}, data={}',
                     System.currentTimeMillis() - exchange.created.time,
                     exchange.exception != null,
-                    exchange.message.body
+                    exchange.message.getBody(String.class)
                 )
               }
           })
           .unmarshal().json(JsonLibrary.Jackson, Map.class)
           .log('req: ${body}')
           .process(applyDamage as Processor)
+          .marshal().json(JsonLibrary.Jackson)
   traits:
     gc:
       configuration:
