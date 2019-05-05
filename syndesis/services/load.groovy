@@ -28,4 +28,4 @@ from('seda:send?concurrentConsumers={{seda.consumers:25}}')
                 )
               }
           })
-    .to("knative:endpoint/damage-game")
+    .to("http4:damage-game.syndesis.svc.cluster.local")
