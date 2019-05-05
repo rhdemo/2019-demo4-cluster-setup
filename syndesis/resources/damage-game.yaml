@@ -45,7 +45,7 @@ spec:
       // Configure undertow threading
       //
       def hostop = new UndertowHostOptions()
-      hostop.ioThreads = 2
+      hostop.ioThreads = 1
       hostop.workerThreads = 10
 
       context {
