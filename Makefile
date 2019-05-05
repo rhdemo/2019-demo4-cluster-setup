@@ -36,6 +36,9 @@ apicurio: oc_login
 optaplanner: oc_login
 	./optaplanner/deploy.sh
 
+opendatahub: oc_login
+	./opendatahub/deploy.sh
+
 cluster_create:
 	./cluster-installer/create.sh ${CLUSTER_NAME} ${MASTER_EC2_TYPE} ${WORKER_EC2_TYPE} ${AWS_REGION} ${CLUSTER_CONFIG_HOME} ${VERSION}
 

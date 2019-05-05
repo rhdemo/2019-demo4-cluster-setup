@@ -80,3 +80,20 @@ To install all Camel K components, run:
 ```bash
 make camel-k
 ```
+
+## Open Data Hub
+To create an ODH Developer Catalog entry and install the ODH operator in the
+namespace "opendatahub" run:
+
+```bash
+make opendatahub
+```
+
+If you want Open Data Hub to show up in the Developer Catalog for additional (or all) 
+namespaces, you need to modify the file 
+[opendatahub/opendatahub-operator.operatorgroup.yaml](opendatahub/opendatahub-operator.operatorgroup.yaml)
+to include each namespace you want it to appear in (or for all namespaces,
+remove the .spec dictionary from the yaml)
+
+NOTE: Deploying from the catalog will only work in the opendatahub namespace
+since the operator will already be deployed
