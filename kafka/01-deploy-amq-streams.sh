@@ -11,6 +11,9 @@ function check_openshift_4 {
   fi
 }
 
+# using this env var because the actual operator name is "amq-streams" if installed via OLM on OCP4 but it's "strimzi" if installed via release file on OCP3.x
+OPERATOR_NAME=amq-streams
+
 if check_openshift_4; then
     echo "Detected OpenShift 4 - Installing AMQ Streams via OLM"
 
@@ -28,17 +31,31 @@ if check_openshift_4; then
     rm $DIR/amq-streams/$NAMESPACE-catalog-source-config.yaml
     rm $DIR/amq-streams/$NAMESPACE-subscription.yaml
 else
-    echo "OpenShift older than 4 - Cancelling AMQ Streams installation"
-    exit 1
+    echo "OpenShift older than 4 - Installing AMQ Streams via release"
+
+    # download Strimzi release
+    wget https://github.com/jboss-container-images/amqstreams-1-openshift-image/releases/download/$KAFKA_OPERATOR_VERSION/amq-streams-$KAFKA_OPERATOR_VERSION.tar.gz
+    mkdir $DIR/amq-streams-$KAFKA_OPERATOR_VERSION
+    tar xzf amq-streams-$KAFKA_OPERATOR_VERSION.tar.gz -C $DIR/amq-streams-$KAFKA_OPERATOR_VERSION --strip 1
+    rm amq-streams-$KAFKA_OPERATOR_VERSION.tar.gz
+
+    sed -i "s/namespace: .*/namespace: $NAMESPACE/" $DIR/amq-streams-$KAFKA_OPERATOR_VERSION/install/cluster-operator/*RoleBinding*.yaml
+
+    oc apply -f $DIR/amq-streams-$KAFKA_OPERATOR_VERSION/install/cluster-operator -n $NAMESPACE
+    oc apply -f $DIR/amq-streams-$KAFKA_OPERATOR_VERSION/install/strimzi-admin -n $NAMESPACE
+
+    rm -rf $DIR/amq-streams-$KAFKA_OPERATOR_VERSION
+
+    OPERATOR_NAME=strimzi
 fi
 
 echo "Waiting for cluster operator to be ready..."
 # this check is done because via OLM, it takes more time to create the deployment
-(oc get deployment -n $NAMESPACE | grep amq-streams-cluster-operator) >/dev/null 2>&1
+(oc get deployment -n $NAMESPACE | grep $OPERATOR_NAME-cluster-operator) >/dev/null 2>&1
 while [ $? -ne 0 ]
 do
     sleep 2
-    (oc get deployment -n $NAMESPACE | grep amq-streams-cluster-operator) >/dev/null 2>&1
+    (oc get deployment -n $NAMESPACE | grep $OPERATOR_NAME-cluster-operator) >/dev/null 2>&1
 done
-oc rollout status deployment/amq-streams-cluster-operator -w -n $NAMESPACE
+oc rollout status deployment/$OPERATOR_NAME-cluster-operator -w -n $NAMESPACE
 echo "...cluster operator ready"
