@@ -20,6 +20,8 @@ parameters:
   - name: IP
     value: "0.0.0.0"
     required: true
+  - name: PASSWORD
+    value: ""
   - name: IMAGE_REPOSITORY
     value: quay.io/redhatdemo/demo4-admin-server:latest
     required: true
@@ -54,6 +56,7 @@ objects:
       name: ${APPLICATION_NAME}
     data:
     stringData:
+      PASSWORD: ${PASSWORD}
       DATAGRID_HOST: ${DATAGRID_HOST}
       DATAGRID_HOTROD_PORT: ${DATAGRID_HOTROD_PORT}
       DATAGRID_CONSOLE_PORT: ${DATAGRID_CONSOLE_PORT}
