@@ -10,7 +10,7 @@ metadata:
     repository: https://gitlab.com/opendatahub/opendatahub-operator
     support: Open Data Hub
     certified: "false"
-    alm-examples: '[ { "kind": "OpenDataHub", "spec": { "jupyter-on-openshift": { "jupyterhub_config": "" }, "spark-operator": { "master_node_count": 1, "master_memory": "2Gi", "master_cpu": 2, "worker_node_count": 2, "worker_memory": "2Gi", "worker_cpu": 2 } }, "apiVersion": "opendatahub.io/v1alpha1", "metadata": { "name": "example-opendatahub" } } ]'
+    alm-examples: '[ { "kind": "OpenDataHub", "spec": { "jupyter-on-openshift": { "jupyterhub_config": "" }, "spark-operator": { "master_node_count": 1, "master_memory": "2Gi", "master_cpu": 2, "worker_node_count": 2, "worker_memory": "2Gi", "worker_cpu": 2 } }, "apiVersion": "opendatahub.io/v1alpha1", "metadata": { "name": "summit-opendatahub" } } ]'
   name: opendatahub-operator.v0.2.0
   namespace: opendatahub
 spec:
