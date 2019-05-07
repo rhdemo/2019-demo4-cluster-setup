@@ -12,6 +12,9 @@ echo "...$KAFKA_SOURCE deployment ready"
 # patching and waiting for the related pod running
 oc patch deployment $KAFKA_SOURCE --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/resources", "value": {"requests": {"memory": "512Mi", "cpu": "250m"}, "limits": {"memory": "512Mi", "cpu": "250m"}}}]' -n $TARGET_PROJECT
 
+# Remove Istio sidecar from Knative Kafka consumers
+oc patch deployment $KAFKA_SOURCE --type='json' -p='[{"op": "add", "path": "/spec/template/metadata/annotations", "value": {"sidecar.istio.io/inject": "false"}}]' -n $TARGET_PROJECT
+
 echo "Waiting for $KAFKA_SOURCE deployment to be ready..."
 oc rollout status deployment/$KAFKA_SOURCE -w -n $TARGET_PROJECT
 echo "...$KAFKA_SOURCE deployment ready"
@@ -40,6 +43,9 @@ echo "...$KAFKA_SOURCE deployment ready"
 
 # patching and waiting for the related pod running
 oc patch deployment $KAFKA_SOURCE --type='json' -p='[{"op": "replace", "path": "/spec/template/spec/containers/0/resources", "value": {"requests": {"memory": "512Mi", "cpu": "250m"}, "limits": {"memory": "512Mi", "cpu": "250m"}}}]' -n $TARGET_PROJECT
+
+# Remove Istio sidecar from Knative Kafka consumers
+oc patch deployment $KAFKA_SOURCE --type='json' -p='[{"op": "add", "path": "/spec/template/metadata/annotations", "value": {"sidecar.istio.io/inject": "false"}}]' -n $TARGET_PROJECT
 
 echo "Waiting for $KAFKA_SOURCE deployment to be ready..."
 oc rollout status deployment/$KAFKA_SOURCE -w -n $TARGET_PROJECT
