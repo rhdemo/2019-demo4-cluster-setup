@@ -2,7 +2,8 @@
 
 set -e
 
-source ./config.sh
+DIAGNOSTICS_DIR=$(dirname "$0")
+source ./$DIAGNOSTICS_DIR/config.sh
 
 # Quick check
 oc project
