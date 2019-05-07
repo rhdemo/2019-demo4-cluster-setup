@@ -71,7 +71,6 @@ spec:
           selector:
             matchLabels:
               name: opendatahub-operator
-              operated-by: opendatahub-operator
           strategy: {}
           template:
             metadata:
