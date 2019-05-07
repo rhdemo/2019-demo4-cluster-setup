@@ -31,6 +31,5 @@ oc apply -f $ODH_DIR/service_account.yaml -f $ODH_DIR/role.yaml -f $ODH_DIR/role
 # Make the operator service account project admin so JupyterHub can deploy w/o issue
 oc adm policy add-role-to-user admin -z opendatahub-operator
 
-# Deploy the operator pod
-oc apply -f $ODH_DIR/operator.yaml
-
+# When you create an ODH custom resource, you can remove the jupyterhub, DB, spark-operator by deleting the ODH custom resource "oc delete opendatahub submit-opendatahub"
+# The deployed spark cluster will not be cleaned up by the ODH operator. You will need to delete the ReplicationController for those pods
