@@ -42,5 +42,5 @@ spec:
         autoscaling-target: "1"
         autoscaling-metric: concurrency
         min-scale: "0"
-        max-scale: "100"
+        max-scale: "107"
 
