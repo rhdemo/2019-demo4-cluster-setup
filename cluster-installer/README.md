@@ -1,14 +1,14 @@
-*HOWTO get an OCP4 cluster running to run this demo*
+# HOWTO get an OCP4 cluster running to run this demo
 
 These instructions are based on https://cloud.redhat.com/openshift/install.
 
-# Pre-requisites
+## Pre-requisites
 
-## AWS credentials
+### AWS credentials
 
 To setup an OCP4 cluster that is enabled to run this demo, an AWS account with 'admin' privileges is required. It will be necessary to ensure that the `~/.aws` directory contains the correct `aws_access_key_id` and `aws_secret_access_key` for this account.
 
-## Setup environment vars
+### Setup environment vars
 
 If not done so already, ensure that the following section in the `.env` file is added and populated. See the `.env.example` file as a template.
 
@@ -24,11 +24,11 @@ VERSION=ChangeMe # E.g. 0.16.1
 
 A note about instance sizes: This demo does require some significant EC2 horsepower. It is recommended to use at least `c5.xlarge` instances.
 
-## Setup a working directory
+### Setup a working directory
 
 A config file needs to be written for this to work. After creating a working directory, update the `CLUSTER_CONFIG_HOME` variable in the `.env` file.
 
-## Download installer
+### Download installer
 
 Navigate to https://cloud.redhat.com/openshift/install and download the Installer for the appropriate architecture from:
 
@@ -40,7 +40,7 @@ Rename the downloaded executable to `./openshift-installer`, and copy to CLUSTER
 
 Also, download the "Pull Secret" and record for later.
 
-## Generate an install-config.yaml
+### Generate an install-config.yaml
 
 Run the following command and answer the prompts:
 
@@ -71,7 +71,7 @@ Don't forget to set the appropriate EC2 instance size (`type`) and the EBS volum
 
 Note: If you want to use it again, back-up the `install-config.yaml` file as it does get deleted during the cluster creation process.
 
-## Create a cluster
+### Create a cluster
 
 Start the provisioning process by running:
 
@@ -81,7 +81,7 @@ When the cluster is provisioned, cluster credentials will be displayed. Use thes
 
 Note: This process generates a metadata.json file in the same directory which can be used to destroy the cluster. 
 
-# Cleaning-up
+## Cleaning-up
 
 To destroy the cluster run:
 
