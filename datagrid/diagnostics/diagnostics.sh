@@ -26,7 +26,8 @@ for ((i = 0; i < ${NUM_INSTANCES}; i++)); do
     echo "Generate a heap dump and copy locally"
     oc exec ${pod} -- rm heap.bin || true
     oc exec ${pod} -- jmap -dump:format=b,file=heap.bin ${pid}
-    oc rsync "${pod}:/home/jboss/heap.bin" ${podDir}
+    oc exec ${pod} -- tar -czvpf heap.tgz heap.bin
+    oc rsync "${pod}:/home/jboss/heap.tgz" ${podDir}
 
     echo "Generate thread dump and copy log"
     oc exec ${pod} -- kill -3 ${pid}
