@@ -10,30 +10,7 @@ set -o pipefail
 #
 ######################################################################
 
-################################
-# GLOBALS
-################################
-CLUSTER_NAME=$1
-MASTER_EC2_TYPE=$2
-WORKER_EC2_TYPE=$3
-AWS_REGION=$4
-CLUSTER_CONFIG_HOME=$5
-VERSION=$6
-
-##################################
-# Parse Command Line
-##################################
-if [ $# -lt 6 ]; then
- echo "Usage: $0 <name> <master_ec2_type> <worker_ec2_type>"
- echo " where:"
- echo "  <name>       is the name of the cluster"
- echo "  <master_ec2_type>       is the EC2 type being used for the master nodes"
- echo "  <worker_ec2_type>       is the EC2 type being used for the worker nodes"
- echo "  <aws_region>            is the AWS region to install into"
- echo "  <cluster_config_home>   is the directory to store the config in"
- echo "  <version>               is the version of the release to install"
- exit 1
-fi
+source .env
 
 ################################
 # FUNCTIONS
@@ -68,7 +45,7 @@ function download_installer {
         fi
 
         # download
-        wget $INSTALLER_URL -o ${CLUSTER_CONFIG_HOME}/openshift-installer
+        wget $INSTALLER_URL -O ${CLUSTER_CONFIG_HOME}/openshift-installer
         chmod a+x ${CLUSTER_CONFIG_HOME}/openshift-installer
     fi
 }
@@ -77,6 +54,6 @@ function download_installer {
 ################################
 # MAIN
 ################################
-#debug; #uncomment to display command line args
+debug; #uncomment to display command line args
 make_config_dir;
 download_installer;

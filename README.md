@@ -1,6 +1,6 @@
 # RH Summit 2019 Demo 4 Cluster Setup
 
-This repo contains all scripts to prepare an OpenShift 4 cluster to run Demo 4.
+This repo contains all scripts to prepare an OpenShift 4 cluster to run Demo 4. If you do not have a running OCP4 cluster, you can use these [instructions](/cluster-installer/README.md) to provision one in a nominated AWS account.
 
 ## Setup
 
