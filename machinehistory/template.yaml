@@ -3,6 +3,16 @@ kind: Template
 metadata:
   name: machine-history
 objects:
+- kind: Secret
+  apiVersion: v1
+  metadata:
+    name: postgresql
+    labels:
+      app: machine-history-postgres
+      template: machine-history
+  stringData:
+    database-user: "${GENERATED_DB_USER}"
+    database-password: "${GENERATED_DB_PASS}"
 - apiVersion: v1
   kind: ImageStream
   metadata:
@@ -122,10 +132,16 @@ objects:
           - containerPort: 5432
             protocol: TCP
           env:
-          - name: POSTGRES_USER
-            value: machine_history_user
-          - name: POSTGRES_PASSWORD
-            value: DSAf3DSdfhjkl39s9
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql
+                  key: database-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql
+                  key: database-password
           - name: POSTGRES_DB
             value: machine_history_dev
           volumeMounts:
@@ -190,7 +206,17 @@ objects:
             protocol: TCP
           env:
           - name: QUARKUS_DATASOURCE_URL
-            value: jdbc:postgresql://machine-history-postgres-dev:5432/machine_history_dev 
+            value: jdbc:postgresql://machine-history-postgres-dev:5432/machine_history_dev
+          - name: QUARKUS_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: postgresql
+                key: database-user
+          - name: QUARKUS_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgresql
+                key: database-password
           resources:
             limits:
               cpu: 200m
@@ -227,3 +253,16 @@ objects:
       kind: Service
       name: machine-history
       weight: 100
+parameters:
+  - name: GENERATED_DB_USER
+    displayName: PostgreSQL Connection Username
+    description: Username for PostgreSQL user that will be used for accessing the database.
+    generate: expression
+    from: user[A-Z0-9]{3}
+    required: true
+  - name: GENERATED_DB_PASS
+    displayName: PostgreSQL Connection Password
+    description: Password for the PostgreSQL connection user.
+    generate: expression
+    from: "[a-zA-Z0-9]{16}"
+    required: true
