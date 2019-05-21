@@ -3,7 +3,7 @@ kind: Integration
 metadata:
   name: damage-service
 spec:
-  replicas: 25
+  replicas: 1
   dependencies:
   - camel:undertow
   - camel:jackson
@@ -42,8 +42,6 @@ spec:
       cacheMgr   = new RemoteCacheManager(cacheCfg)
       counterMgr = RemoteCounterManagerFactory.asCounterManager(cacheMgr)
   
-      // .clientIntelligence(ClientIntelligence.BASIC)
-
       //
       // Configure undertow threading
       //
@@ -126,7 +124,7 @@ spec:
           }
       }
 
-      from('undertow:http://0.0.0.0:8080')
+      from('undertow:http://0.0.0.0:8080/ApplyDamage')
           .routePolicy(new RoutePolicySupport() {
               @Override
               public void onExchangeDone(Route route, Exchange exchange) {
