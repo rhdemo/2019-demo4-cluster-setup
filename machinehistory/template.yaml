@@ -248,7 +248,6 @@ objects:
       app: machine-history
       template: machine-history
   spec:
-    host: machine-history.apps.dev.openshift.redhatkeynote.com
     to:
       kind: Service
       name: machine-history
