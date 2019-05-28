@@ -4,6 +4,15 @@ metadata:
   name: optaplanner-demo
   labels:
     app: optaplanner-demo
+parameters:
+  - name: CONTAINER_REQUEST_CPU
+    value: 4000m
+  - name: CONTAINER_REQUEST_MEMORY
+    value: 4000Mi
+  - name: CONTAINER_LIMIT_CPU
+    value: 4000m
+  - name: CONTAINER_LIMIT_MEMORY
+    value: 4000Mi
 objects:
 - apiVersion: v1
   kind: DeploymentConfig
@@ -58,11 +67,11 @@ objects:
             protocol: TCP
           resources:
             requests:
-              cpu: 4000m
-              memory: 4000Mi
+              cpu: ${CONTAINER_REQUEST_CPU}
+              memory: ${CONTAINER_REQUEST_MEMORY}
             limits:
-              cpu: 4000m
-              memory: 4000Mi
+              cpu: ${CONTAINER_LIMIT_CPU}
+              memory: ${CONTAINER_LIMIT_MEMORY}
           securityContext:
             privileged: false
           terminationMessagePath: /dev/termination-log

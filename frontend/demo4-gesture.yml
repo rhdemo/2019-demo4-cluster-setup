@@ -87,7 +87,7 @@ objects:
         deploymentConfig: ${APPLICATION_NAME}
         app: ${APPLICATION_NAME}
     spec:
-      replicas: ${REPLICAS}
+      replicas: ${{REPLICAS}}
       selector:
         deploymentConfig: ${APPLICATION_NAME}
       strategy:

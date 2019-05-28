@@ -11,9 +11,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 [[ -z "${CERTIFICATE_FILE}" ]] && { CERTIFICATE_FILE="prod-cert.pem"; }
 [[ -z "${CA_FILE}" ]] && { CA_FILE="prod-ca.pem"; }
 
-if [[ "${FRONTEND_DEV}" = "true" ]]
+if [[ "${FRONTEND_MINI}" = "true" ]]
 then
-    echo "Deploying in front end dev mode.  No S3 storage and 1 pod per service."
+    echo "Deploying mini installation.  No S3 storage and 1 pod per service."
     KEY=''
     CERTIFICATE=''
     CA_CERTIFICATE=''
@@ -59,18 +59,6 @@ SECRET_KEY=$(strings /dev/urandom | grep -o '[[:alnum:]]' | head -n 30 | tr -d '
 
 oc new-project web-game-demo
 
-oc process -f ${DIR}/demo4-gesture.yml \
-  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-gesture:latest \
-  -p S3_ENDPOINT=${S3_ENDPOINT} \
-  -p S3_REGION=${S3_REGION} \
-  -p S3_BUCKET=${S3_BUCKET} \
-  -p S3_PREFIX=${S3_PREFIX} \
-  -p S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID} \
-  -p S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY} \
-  -p SECRET_KEY=${SECRET_KEY} \
-  ${GESTURE_PARAMS} \
-  | oc create -f -
-
 oc process -f ${DIR}/demo4-admin-server.yml \
   -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-admin-server:latest \
   ${ADMIN_SERVER_PARAMS} \
@@ -94,30 +82,47 @@ oc process -f ${DIR}/demo4-dashboard-ui.yml \
   ${DASHBOARD_UI_PARAMS} \
   | oc create -f -
 
-oc process -f ${DIR}/demo4-web-game-server.yml \
-  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-web-game-server:latest \
-  ${GAME_SERVER_PARAMS} \
-  | oc create -f -
+if [[ ${FRONTEND_SKIP_MOBILE} == "true" ]]; then
+    echo "Skipping mobile game"
+else
+    echo "Deploying mobile game, training data api, and leaderboard."
+    oc process -f ${DIR}/demo4-gesture.yml \
+      -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-gesture:latest \
+      -p S3_ENDPOINT=${S3_ENDPOINT} \
+      -p S3_REGION=${S3_REGION} \
+      -p S3_BUCKET=${S3_BUCKET} \
+      -p S3_PREFIX=${S3_PREFIX} \
+      -p S3_ACCESS_KEY_ID=${S3_ACCESS_KEY_ID} \
+      -p S3_SECRET_ACCESS_KEY=${S3_SECRET_ACCESS_KEY} \
+      -p SECRET_KEY=${SECRET_KEY} \
+      ${GESTURE_PARAMS} \
+      | oc create -f -
 
-oc process -f ${DIR}/demo4-web-game-ui.yml \
-  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-web-game-nginx:latest \
-  -p KEY="${KEY}" \
-  -p CERTIFICATE="${CERTIFICATE}" \
-  -p CA_CERTIFICATE="${CA_CERTIFICATE}" \
-  ${GAME_UI_PARAMS} \
-  | oc create -f -
+    oc process -f ${DIR}/demo4-web-game-server.yml \
+      -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-web-game-server:latest \
+      ${GAME_SERVER_PARAMS} \
+      | oc create -f -
 
-oc process -f ${DIR}/demo4-leaderboard-background.yml \
-  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-background:latest \
-  ${LEADERBOARD_BACKGROUND_PARAMS} \
-  | oc create -f -
+    oc process -f ${DIR}/demo4-web-game-ui.yml \
+      -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-web-game-nginx:latest \
+      -p KEY="${KEY}" \
+      -p CERTIFICATE="${CERTIFICATE}" \
+      -p CA_CERTIFICATE="${CA_CERTIFICATE}" \
+      ${GAME_UI_PARAMS} \
+      | oc create -f -
 
-oc process -f ${DIR}/demo4-leaderboard-server.yml \
-  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-server:latest \
-  ${LEADERBOARD_SERVER_PARAMS} \
-  | oc create -f -
+    oc process -f ${DIR}/demo4-leaderboard-background.yml \
+      -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-background:latest \
+      ${LEADERBOARD_BACKGROUND_PARAMS} \
+      | oc create -f -
 
-oc process -f ${DIR}/demo4-leaderboard-ui.yml \
-  -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-nginx:latest \
-  ${LEADERBOARD_UI_PARAMS} \
-  | oc create -f -
+    oc process -f ${DIR}/demo4-leaderboard-server.yml \
+      -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-server:latest \
+      ${LEADERBOARD_SERVER_PARAMS} \
+      | oc create -f -
+
+    oc process -f ${DIR}/demo4-leaderboard-ui.yml \
+      -p IMAGE_REPOSITORY=quay.io/${QUAY_ORG}/demo4-leaderboard-nginx:latest \
+      ${LEADERBOARD_UI_PARAMS} \
+      | oc create -f -
+fi
