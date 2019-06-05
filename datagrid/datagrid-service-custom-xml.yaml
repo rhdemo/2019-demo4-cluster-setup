@@ -142,10 +142,11 @@ objects:
             timeoutSeconds: 10
           resources:
             limits:
-              memory: ${TOTAL_CONTAINER_MEM}Mi
+              cpu: ${TOTAL_CONTAINER_CPU}
+              memory: ${TOTAL_CONTAINER_MEM}
             requests:
-              cpu: "1"
-              memory: ${TOTAL_CONTAINER_MEM}Mi
+              cpu: ${TOTAL_CONTAINER_CPU}
+              memory: ${TOTAL_CONTAINER_MEM}
           volumeMounts:
           - mountPath: /opt/datagrid/standalone/configuration/user
             name: config-volume
@@ -172,10 +173,14 @@ parameters:
   name: NUMBER_OF_INSTANCES
   required: true
   value: "1"
+- description: Sets the total cpu available to the application.
+  displayName: Total CPU
+  name: TOTAL_CONTAINER_CPU
+  value: "1"
 - description: Sets the total memory, in MiB, available to the application.
   displayName: Total Memory
   name: TOTAL_CONTAINER_MEM
-  value: "512"
+  value: "512Mi"
 - description: Sets the storage capacity, in GiB, of the persistence volume.
   displayName: Storage Capacity
   name: TOTAL_CONTAINER_STORAGE

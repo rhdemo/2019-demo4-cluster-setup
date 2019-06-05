@@ -1,34 +1,46 @@
 {
-	"id": "uuidv4",
-	"state": "lobby",
-	"shakeDemo": {
-		"enabled": true,
-		"multiplier": 2,
-		"maxPerSecond": 5000
-	},
-	"motions": {
-		"shake": false,
-		"circle": false,
-		"x": false,
-		"roll": false,
-		"fever": false,
-		"floss": false
-	},
-	"scoring": {
-		"shake": 1,
-		"circle": 5,
-		"x": 5,
-		"roll": 10,
-		"fever": 20,
-		"floss": 100
-	},
-	"damageMultiplier": 1,
-	"damage": {
-		"shake": 0.01,
-		"circle": 0.02,
-		"x": 0.02,
-		"roll": 0.05,
-		"fever": 0.05,
-		"floss": 0.10
-	}
+  "id": "uuidv4",
+  "state": "lobby",
+  "shakeDemo": {
+    "enabled": true,
+    "multiplier": 2,
+    "maxPerSecond": 1000
+  },
+  "motions": {
+    "shake": false,
+    "circle": false,
+    "x": false,
+    "roll": false,
+    "fever": false,
+    "floss": false
+  },
+  "bypassAI": false,
+  "ai": {
+    "shake": 0.5,
+    "circle": 0.8,
+    "x": 0.96,
+    "roll": 0.95,
+    "fever": 0.8,
+    "floss": 0.7
+  },
+  "scoring": {
+    "shake": 10,
+    "circle": 30,
+    "x": 30,
+    "roll": 50,
+    "fever": 50,
+    "floss": 100,
+    "bonus": 1000
+  },
+  "damageMultiplier": 0.2,
+  "damage": {
+    "shake": 0.01,
+    "circle": 0.03,
+    "x": 0.03,
+    "roll": 0.05,
+    "fever": 0.05,
+    "floss": 0.1
+  },
+  "dashboardTransparent": false
 }
+

@@ -55,7 +55,7 @@ objects:
       labels:
         app: ${APPLICATION_NAME}
     spec:
-      replicas: ${REPLICAS}
+      replicas: ${{REPLICAS}}
       selector:
         deploymentconfig: ${APPLICATION_NAME}
       strategy:

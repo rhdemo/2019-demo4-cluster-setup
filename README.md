@@ -98,3 +98,43 @@ remove the .spec dictionary from the yaml)
 
 NOTE: Deploying from the catalog will only work in the opendatahub namespace
 since the operator will already be deployed
+
+## Sample Demo Deployments
+
+### OptaPlanner Demo
+To demonstrate OptaPlanner with the dashboard and admin screens with a smaller resource requirement, we can skip several portions of the demo.  Using the environment file similar to the following:
+```.env
+# oc_login
+OC=~/bin/oc
+OC_URL=https://openshift-host:8443
+OC_USER=admin
+OC_PASSWORD=admin
+
+# Datagrid
+DATAGRID_INSTANCES=1
+DATAGRID_CPU=1000m
+DATAGRID_MEMORY=2048Mi
+
+# OptaPlanner
+OPTAPLANNER_REQUEST_CPU=1000m
+OPTAPLANNER_REQUEST_MEMORY=1000Mi
+OPTAPLANNER_LIMIT_CPU=2000m
+OPTAPLANNER_LIMIT_MEMORY=4000Mi
+
+# Frontend
+FRONTEND_MINI=true
+FRONTEND_SKIP_MOBILE=true
+```
+
+Then execute the make instructions ton install the required components (datagrid, optaplanner, and frontend):
+```bash
+make datagrid optaplanner frontend
+```
+
+After deployment and all pods are up and running, you should be able to interact with the demo:
+
+Dashboard UI: http://dashboard-web-game-demo.cluster-host
+
+Admin UI: http://admin-web-game-demo.cluster-host (blank password unless `ADMIN_PASSWORD` was set in the .env file)
+
+In the Admin UI, you can access the OptaPlanner functionality in the `OptaPlanner` section including play/pause the game, damage simulation, and add/remove/pause/unpause mechanics.  
